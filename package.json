@@ -1,0 +1,17 @@
+{
+  "name": "kimono-art-nails",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Catalog website for KIMONO Art Nails — handcrafted Japanese-inspired acrylic nail chips.",
+  "type": "module",
+  "scripts": {
+    "dev:api": "npm --prefix api run dev",
+    "dev:ui": "npm --prefix ui run dev",
+    "build:ui": "npm --prefix ui run build",
+    "seed": "npm --prefix api run seed",
+    "install:all": "npm install --prefix api && npm install --prefix ui"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,55 @@
+/* ===========================================================================
+   Design tokens — KIMONO Art Nails
+   Palette taken directly from the brand color sheet.
+   =========================================================================== */
+:root {
+  /* Base / neutrals */
+  --base: #f3ece9;          /* primary background / section base */
+  --base-2: #e7d9d4;        /* secondary base */
+  --off-white: #f9f6f4;     /* off-white */
+  --white: #ffffff;
+
+  /* Text */
+  --text: #5e514c;          /* primary text (warm brown) */
+  --text-soft: #8c7e78;     /* muted text */
+  --text-faint: #b3a8a2;    /* faint captions */
+
+  /* Accent */
+  --gold: #d8b57a;          /* gold accent */
+  --gold-deep: #c39e63;
+
+  /* Pinks (the "kawaii" plus) */
+  --pink-1: #f7dde6;
+  --pink-2: #f2bfcb;
+  --pink-3: #e8a7b3;
+  --pink-4: #d88fa0;
+
+  /* Sub colors */
+  --greige: #c7b4aa;
+  --crimson: #8c1d2c;       /* accent / sale */
+
+  /* Semantic */
+  --bg: var(--off-white);
+  --surface: var(--white);
+  --line: #ece2dd;          /* hairline borders */
+  --shadow-soft: 0 18px 50px -28px rgba(94, 81, 76, 0.45);
+  --shadow-card: 0 12px 40px -24px rgba(94, 81, 76, 0.5);
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', 'Shippori Mincho', Georgia, serif;
+  --font-sans: 'Jost', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* Layout */
+  --maxw: 1180px;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+  --radius: 14px;
+  --radius-lg: 26px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur: 0.45s;
+
+  /* Header height (used for scroll offset) */
+  --header-h: 76px;
+}
