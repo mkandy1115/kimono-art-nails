@@ -1,52 +1,66 @@
 import 'dotenv/config';
-import { sequelize, hasDatabase, Category, Product } from './models/index.js';
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+import { sql } from 'drizzle-orm';
+import * as schema from './db/schema.js';
 import { categories as seedCategories, products as seedProducts } from './data/catalog.js';
 
 // ----------------------------------------------------------------------------
-// Seed script: populates the PostgreSQL database with the catalog data.
+// Seed script: populates the Neon PostgreSQL database with the catalog data.
 //
-//   npm run seed
+//   npm run db:push   # create/sync the tables first
+//   npm run seed      # then load the data
 //
-// Safe to re-run: it upserts categories and products by their unique `slug`.
+// Runs locally with Node (reads DATABASE_URL from api/.env). Safe to re-run:
+// it upserts categories and products by their unique `slug`.
 // ----------------------------------------------------------------------------
 
+const databaseUrl = process.env.DATABASE_URL?.trim();
+
 async function seed() {
-  if (!hasDatabase) {
+  if (!databaseUrl) {
     console.error(
       'No DATABASE_URL is configured. Set it in api/.env (Neon connection string) before seeding.'
     );
     process.exit(1);
   }
 
-  await sequelize.authenticate();
-  await sequelize.sync({ alter: true });
+  const db = drizzle(neon(databaseUrl), { schema });
+  const { categories, products } = schema;
 
-  // Categories
+  // Categories — upsert by slug, and remember each generated id.
   const categoryIdBySlug = {};
   for (const cat of seedCategories) {
-    const [row] = await Category.upsert(
-      {
+    const [row] = await db
+      .insert(categories)
+      .values({
         slug: cat.slug,
         name: cat.name,
         description: cat.description,
         displayOrder: cat.displayOrder ?? 0,
-      },
-      { returning: true }
-    );
-    // upsert's returning row can vary by dialect; fetch to be safe.
-    const saved = row ?? (await Category.findOne({ where: { slug: cat.slug } }));
-    categoryIdBySlug[cat.slug] = saved.id;
+      })
+      .onConflictDoUpdate({
+        target: categories.slug,
+        set: {
+          name: cat.name,
+          description: cat.description,
+          displayOrder: cat.displayOrder ?? 0,
+          updatedAt: sql`now()`,
+        },
+      })
+      .returning({ id: categories.id });
+    categoryIdBySlug[cat.slug] = row.id;
   }
   console.log(`[seed] Upserted ${seedCategories.length} categories.`);
 
-  // Products
+  // Products — upsert by slug.
   for (const p of seedProducts) {
-    await Product.upsert({
+    const values = {
       slug: p.slug,
       name: p.name,
       tagline: p.tagline,
       description: p.description,
-      price: p.price,
+      price: String(p.price),
       currency: p.currency,
       categoryId: categoryIdBySlug[p.categorySlug] ?? null,
       shape: p.shape,
@@ -59,11 +73,17 @@ async function seed() {
       gallery: p.gallery ?? [],
       theme: p.theme ?? {},
       displayOrder: p.displayOrder ?? 0,
-    });
+    };
+    await db
+      .insert(products)
+      .values(values)
+      .onConflictDoUpdate({
+        target: products.slug,
+        set: { ...values, updatedAt: sql`now()` },
+      });
   }
   console.log(`[seed] Upserted ${seedProducts.length} products.`);
 
-  await sequelize.close();
   console.log('[seed] Done.');
 }
 

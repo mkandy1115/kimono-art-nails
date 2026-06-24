@@ -8,6 +8,9 @@
     "dev:api": "npm --prefix api run dev",
     "dev:ui": "npm --prefix ui run dev",
     "build:ui": "npm --prefix ui run build",
+    "db:push": "npm --prefix api run db:push",
+    "db:generate": "npm --prefix api run db:generate",
+    "db:migrate": "npm --prefix api run db:migrate",
     "seed": "npm --prefix api run seed",
     "install:all": "npm install --prefix api && npm install --prefix ui"
   },

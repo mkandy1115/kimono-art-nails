@@ -1,0 +1,18 @@
+{
+  // Cloudflare Workers configuration for the KIMONO Art Nails API.
+  // Docs: https://developers.cloudflare.com/workers/wrangler/configuration/
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "kimono-art-nails-api",
+  "main": "src/index.js",
+  "compatibility_date": "2024-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  }
+
+  // Secrets (DATABASE_URL) and vars (ALLOWED_ORIGINS) are NOT stored here.
+  // - Local dev:   put them in api/.dev.vars (git-ignored).
+  // - Production:  add them in the Cloudflare dashboard
+  //                (Workers > your worker > Settings > Variables),
+  //                or via `npx wrangler secret put DATABASE_URL`.
+}

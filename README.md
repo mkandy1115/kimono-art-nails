@@ -8,8 +8,8 @@ collection and send an order inquiry, which suits a studio selling only 2–3
 items a month.
 
 ```
-React (Vite) frontend  ──HTTPS──▶  Node.js + Express API  ──SQL──▶  PostgreSQL
-   Cloudflare Pages                  Koyeb (or Render)               Neon
+React (Vite) frontend  ──HTTPS──▶  Hono API            ──HTTP/SQL──▶  PostgreSQL
+   Cloudflare Pages                  Cloudflare Workers               Neon
 ```
 
 Everything is designed to run at **$0/month** on free tiers.
@@ -20,26 +20,27 @@ Everything is designed to run at **$0/month** on free tiers.
 
 ```
 kimono-art-nails/
-├── api/      # Node.js + Express + Sequelize API  → deploys to Koyeb/Render
-├── ui/       # React + Vite frontend              → deploys to Cloudflare Pages
+├── api/      # Hono + Drizzle API  → deploys to Cloudflare Workers
+├── ui/       # React + Vite frontend → deploys to Cloudflare Pages
 ├── package.json   # root convenience scripts
 └── README.md
 ```
 
 The two apps are independent: each has its own `package.json` and is deployed
-separately, but they live in one Git repository as requested.
+separately, but they live in one Git repository.
 
 ---
 
 ## Tech stack
 
-| Part            | Choice                         | Host                  | Free? |
-| --------------- | ------------------------------ | --------------------- | ----- |
-| Frontend        | React + Vite + React Router    | Cloudflare Pages      | ✅    |
-| API             | Node.js + Express + Sequelize  | Koyeb (or Render)     | ✅    |
-| Database        | PostgreSQL                     | Neon                  | ✅    |
-| ORM             | Sequelize                      | —                     | ✅    |
-| Repo            | Git                            | GitHub                | ✅    |
+| Part      | Choice                      | Host               | Free? |
+| --------- | --------------------------- | ------------------ | ----- |
+| Frontend  | React + Vite + React Router | Cloudflare Pages   | ✅    |
+| API       | Node.js (Hono framework)    | Cloudflare Workers | ✅    |
+| Database  | PostgreSQL                  | Neon               | ✅    |
+| ORM       | Drizzle ORM                 | —                  | ✅    |
+| DB driver | `@neondatabase/serverless`  | —                  | ✅    |
+| Repo      | Git                         | GitHub             | ✅    |
 
 ### Design
 
@@ -57,131 +58,121 @@ You need **Node.js 18+** (built with Node 22).
 
 ```bash
 # 1) Install dependencies for both apps
-npm run install:all          # or: npm install --prefix api && npm install --prefix ui
+npm run install:all
 
-# 2) Start the API (terminal 1)  → http://localhost:3000
+# 2) Start the API Worker (terminal 1)  → http://localhost:8787
 npm run dev:api
 
-# 3) Start the UI (terminal 2)   → http://localhost:5173
+# 3) Start the UI (terminal 2)          → http://localhost:5173
 npm run dev:ui
 ```
 
 Open **http://localhost:5173**.
 
-- With **no database configured**, the API serves a built‑in sample catalog from
-  memory, so the whole site works immediately — handy before you create any
-  hosting accounts.
-- The Vite dev server proxies `/api` to `http://localhost:3000`, so no CORS
-  setup is needed locally.
+- With **no database configured**, the Worker serves a built‑in sample catalog
+  from memory, so the whole site works immediately — even before any database
+  is wired up.
+- The Vite dev server proxies `/api` to the local Worker at
+  `http://localhost:8787`, so there's no CORS friction locally.
 
----
+### Local environment files
 
-## Environment variables
-
-Copy the example files and fill them in when you have your accounts:
+The project uses two different env files for the API because the database
+**tooling** runs in Node while the **Worker** runs in the Workers runtime:
 
 ```bash
+# Worker local dev (read by `wrangler dev`)
+cp api/.dev.vars.example api/.dev.vars
+
+# DB tooling (read by drizzle-kit + the seed script, via Node)
 cp api/.env.example api/.env
-cp ui/.env.example  ui/.env
+
+# Frontend
+cp ui/.env.example ui/.env
 ```
 
-**`api/.env`**
+| File            | Used by                                   | Keys                            |
+| --------------- | ----------------------------------------- | ------------------------------- |
+| `api/.dev.vars` | `wrangler dev` (the Worker)               | `DATABASE_URL`, `ALLOWED_ORIGINS` |
+| `api/.env`      | `db:push` / `db:migrate` / `seed` (Node)  | `DATABASE_URL`                  |
+| `ui/.env`       | Vite build                                | `VITE_API_URL`                  |
 
-| Variable          | Description                                                            |
-| ----------------- | ---------------------------------------------------------------------- |
-| `DATABASE_URL`    | Neon PostgreSQL connection string. Leave blank to use in‑memory data.  |
-| `ALLOWED_ORIGINS` | Comma‑separated frontend origins for CORS, or `*` for any.             |
-| `PORT`            | Usually injected by the host; defaults to `3000`.                      |
-| `NODE_ENV`        | `development` or `production`.                                         |
-
-**`ui/.env`**
-
-| Variable       | Description                                                                |
-| -------------- | -------------------------------------------------------------------------- |
-| `VITE_API_URL` | Base URL of the deployed API (e.g. `https://...koyeb.app`). Blank = local. |
-
-> If the API is ever unreachable (not deployed yet, or waking from
-> scale‑to‑zero), the frontend automatically falls back to a bundled sample
+> Both `.dev.vars` and `.env` are git‑ignored. Never commit real secrets.
+> If the API is ever unreachable, the frontend falls back to a bundled sample
 > catalog so the site never looks broken.
 
 ---
 
-## Deployment
+## Database setup (Neon)
 
-> Order matters: **1) Neon → 2) API on Koyeb → 3) UI on Cloudflare Pages.**
-> You'll paste each step's output into the next step's environment variables.
+You've already created the Neon database. To create the tables and load the
+catalog, set `DATABASE_URL` in **`api/.env`** (use the **pooled** connection
+string from Neon), then run:
+
+```bash
+npm run db:push   # creates/syncs the tables from the Drizzle schema
+npm run seed      # loads the catalog data (safe to re-run; upserts by slug)
+```
+
+Optional (versioned migrations instead of `db:push`):
+
+```bash
+npm run db:generate   # writes SQL to api/drizzle/
+npm run db:migrate    # applies it to the database
+```
+
+---
+
+## Deployment (manual, via the Cloudflare dashboard)
+
+Both the API and the frontend deploy from the **same GitHub repo** using
+Cloudflare's Git integration — just different project types and root
+directories. No CLI or `wrangler login` required.
+
+> Recommended order: **1) Neon (done) → 2) Worker API → 3) Pages frontend**,
+> because the frontend needs the Worker's URL.
 
 ### 0) Push to GitHub
 
 ```bash
-git init
 git add .
-git commit -m "Initial commit: KIMONO Art Nails catalog site"
-git branch -M main
-git remote add origin https://github.com/<you>/kimono-art-nails.git
-git push -u origin main
+git commit -m "Migrate API to Hono on Cloudflare Workers"
+git push
 ```
 
-### 1) Database — Neon (PostgreSQL)
+### 1) API — Cloudflare Workers
 
-1. Create a free account at **neon.tech** and create a project.
-2. Copy the **connection string** (looks like
-   `postgresql://user:pass@host/dbname?sslmode=require`).
-3. Seed the database from your machine:
+1. In the Cloudflare dashboard: **Workers & Pages → Create → Workers → Import a
+   repository** (Git), and select this repo.
+2. Build settings:
+   - **Root directory:** `api`
+   - **Deploy command:** `npx wrangler deploy`
+   - (Build command can be left empty.)
+3. After the first deploy, open the worker → **Settings → Variables** and add:
+   - **Secret** `DATABASE_URL` = your Neon **pooled** connection string
+   - **Variable** `ALLOWED_ORIGINS` = your Pages URL, e.g.
+     `https://kimono-art-nails.pages.dev` (you can temporarily use `*`)
+   - Re‑deploy so the variables take effect.
+4. Verify: visit `https://<your-worker>.workers.dev/api/health` — it should
+   report `"mode":"postgres"` once `DATABASE_URL` is set.
 
-   ```bash
-   # put the connection string into api/.env as DATABASE_URL, then:
-   npm run seed
-   ```
+The Worker's `name`, entry point, and compatibility settings are already defined
+in `api/wrangler.jsonc`.
 
-   This creates the tables and inserts the catalog. Re‑running is safe (it
-   upserts by `slug`).
+### 2) Frontend — Cloudflare Pages
 
-> Do **not** use Render's free PostgreSQL for real data — it expires after 30
-> days. Neon is the permanent free database here.
-
-### 2) API — Koyeb (first choice)
-
-1. Create a free account at **koyeb.com** → **Create Web Service** → **GitHub**,
-   and pick this repository.
-2. Configure the service:
-   - **Monorepo / work directory:** `api`
-   - **Builder:** Dockerfile (a `Dockerfile` is included) — or Buildpack with
-     **Run command** `node src/index.js`.
-   - **Port:** `3000` (Koyeb sets `PORT`; the app reads it automatically).
-   - **Instance:** the free `nano` instance is fine.
-3. Add **environment variables**:
-   - `DATABASE_URL` = your Neon connection string
-   - `ALLOWED_ORIGINS` = your Cloudflare URL(s), e.g.
-     `https://kimono-art-nails.pages.dev` (you can start with `*` and tighten
-     later)
-   - `NODE_ENV` = `production`
-4. Deploy. Verify health at `https://<your-app>.koyeb.app/api/health`.
-
-> The free instance scales to zero after ~1 hour idle, so the first request
-> after a quiet period may be slow to wake. The frontend handles this gracefully.
-
-#### Alternative — Render
-
-A `render.yaml` Blueprint is included. In Render: **New → Blueprint**, select the
-repo. It builds from `rootDir: api`, runs `node src/index.js`, and health‑checks
-`/api/health`. Set `DATABASE_URL` and `ALLOWED_ORIGINS` in the dashboard. (Free
-Render services sleep after 15 min idle.)
-
-### 3) Frontend — Cloudflare Pages
-
-1. Create a free account at **cloudflare.com** → **Workers & Pages → Create →
-   Pages → Connect to Git**, and pick this repository.
+1. **Workers & Pages → Create → Pages → Connect to Git**, select this repo.
 2. Build settings:
    - **Root directory:** `ui`
-   - **Framework preset:** `Vite` (or “None”)
+   - **Framework preset:** `Vite`
    - **Build command:** `npm run build`
    - **Build output directory:** `dist`
-3. Add an **environment variable**:
-   - `VITE_API_URL` = your Koyeb API URL (e.g. `https://<your-app>.koyeb.app`)
-4. Deploy. You'll get a URL like `https://kimono-art-nails.pages.dev`.
-5. Go back to the **Koyeb** service and make sure `ALLOWED_ORIGINS` includes
-   this Cloudflare URL, then redeploy the API.
+3. **Settings → Environment variables** → add:
+   - `VITE_API_URL` = your Worker URL (e.g. `https://<your-worker>.workers.dev`)
+   - Re‑deploy so the build picks it up.
+4. You'll get a URL like `https://kimono-art-nails.pages.dev`.
+5. Back in the **Worker** variables, make sure `ALLOWED_ORIGINS` includes this
+   Pages URL, then re‑deploy the Worker.
 
 SPA routing and security headers are pre‑configured via `ui/public/_redirects`
 and `ui/public/_headers`.
@@ -189,6 +180,11 @@ and `ui/public/_headers`.
 > **Why Cloudflare Pages and not Vercel?** Vercel's free Hobby plan is for
 > personal, non‑commercial use. Since this is a commercial shop, Cloudflare
 > Pages is the safer free choice.
+
+### Future deployments
+
+Push to GitHub → Cloudflare rebuilds and redeploys both projects automatically,
+with preview deployments for non‑production branches.
 
 ---
 
@@ -200,7 +196,8 @@ source of truth).
 To add or edit a design:
 
 1. Edit `api/src/data/catalog.js`.
-2. Run `npm run seed` (with `DATABASE_URL` set) to update the database.
+2. Run `npm run seed` (with `DATABASE_URL` set in `api/.env`) to update the
+   database. If you added/renamed columns, run `npm run db:push` first.
 
 Each product supports:
 
@@ -210,7 +207,7 @@ Each product supports:
 
 > Keep `ui/src/data/fallbackCatalog.js` roughly in sync if you want the offline
 > fallback to reflect new designs (optional — it only shows when the API is
-> down).
+> unreachable).
 
 ### Adding real product photos
 
@@ -249,9 +246,12 @@ Base path: `/api`
 
 ## Costs
 
-Everything fits the free tiers for a low‑traffic catalog. You'd only pay if
-traffic grows, you want an always‑on API (no cold starts), or you buy a custom
-domain.
+Everything fits the free tiers for a low‑traffic catalog: Cloudflare Pages
+(static, effectively unlimited requests), Cloudflare Workers (100k requests/day
+on the free plan), and Neon (0.5 GB storage, 100 compute‑hours/month). You'd
+only pay if traffic grows substantially or you buy a custom domain. These are
+ongoing free plans, not trials, but providers can change terms over time —
+keep a periodic database backup so switching later stays easy.
 
 ---
 

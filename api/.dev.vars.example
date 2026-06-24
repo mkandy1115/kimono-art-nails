@@ -1,0 +1,12 @@
+# ----------------------------------------------------------------------------
+# Local Worker variables for `wrangler dev`.
+# Copy this file to ".dev.vars" (git-ignored) and fill in real values.
+# These mirror the secrets/vars you set in the Cloudflare dashboard for prod.
+# ----------------------------------------------------------------------------
+
+# Neon PostgreSQL connection string (use the POOLED connection string).
+# Leave blank to run the API in in-memory mode (serves the seed catalog).
+DATABASE_URL=
+
+# Comma-separated allowed frontend origins, or "*" for any.
+ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173

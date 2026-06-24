@@ -1,12 +1,14 @@
-import { hasDatabase, Product, Category, Inquiry } from './models/index.js';
+import { and, asc, eq } from 'drizzle-orm';
+import { products, categories, inquiries } from './db/schema.js';
 import { products as seedProducts, categories as seedCategories } from './data/catalog.js';
 
 // ----------------------------------------------------------------------------
 // Data-access layer.
 //
-// This module hides whether data comes from PostgreSQL (via Sequelize) or from
-// the in-memory seed catalog. Routes call these functions and never need to
-// know which mode the API is running in.
+// Every function takes a Drizzle `db` instance (or null). When `db` is null
+// (no DATABASE_URL configured), the same data is served from the in-memory seed
+// catalog so the site keeps working. Response shapes are identical in both
+// modes, so the frontend never needs to care which one is active.
 // ----------------------------------------------------------------------------
 
 const byOrder = (a, b) =>
@@ -20,33 +22,62 @@ function decorateSeedProduct(product) {
   };
 }
 
+// Maps a joined products+categories row into the API's product shape.
+function mapProductRow(row) {
+  const p = row.product ?? row;
+  const category = row.category && row.category.slug ? row.category : null;
+  return {
+    slug: p.slug,
+    name: p.name,
+    tagline: p.tagline,
+    description: p.description,
+    price: p.price,
+    currency: p.currency,
+    categorySlug: category?.slug ?? null,
+    shape: p.shape,
+    length: p.length,
+    pieces: p.pieces,
+    materials: p.materials,
+    status: p.status,
+    featured: p.featured,
+    image: p.image,
+    gallery: p.gallery ?? [],
+    theme: p.theme ?? {},
+    displayOrder: p.displayOrder,
+    category: category ? { slug: category.slug, name: category.name } : null,
+  };
+}
+
 // ----------------------------- Categories -----------------------------------
 
-export async function listCategories() {
-  if (hasDatabase) {
-    const rows = await Category.findAll({ order: [['displayOrder', 'ASC'], ['name', 'ASC']] });
-    return rows.map((r) => r.toJSON());
+export async function listCategories(db) {
+  if (db) {
+    const rows = await db
+      .select()
+      .from(categories)
+      .orderBy(asc(categories.displayOrder), asc(categories.name));
+    return rows;
   }
   return [...seedCategories].sort(byOrder);
 }
 
 // ------------------------------- Products ------------------------------------
 
-export async function listProducts({ category, featured, status } = {}) {
-  if (hasDatabase) {
-    const where = {};
-    if (featured !== undefined) where.featured = featured;
-    if (status) where.status = status;
+export async function listProducts(db, { category, featured, status } = {}) {
+  if (db) {
+    const conditions = [];
+    if (featured !== undefined) conditions.push(eq(products.featured, featured));
+    if (status) conditions.push(eq(products.status, status));
+    if (category) conditions.push(eq(categories.slug, category));
 
-    const include = [{ model: Category, as: 'category', attributes: ['slug', 'name'] }];
-    if (category) include[0].where = { slug: category };
+    const rows = await db
+      .select({ product: products, category: categories })
+      .from(products)
+      .leftJoin(categories, eq(products.categoryId, categories.id))
+      .where(conditions.length ? and(...conditions) : undefined)
+      .orderBy(asc(products.displayOrder), asc(products.name));
 
-    const rows = await Product.findAll({
-      where,
-      include,
-      order: [['displayOrder', 'ASC'], ['name', 'ASC']],
-    });
-    return rows.map((r) => r.toJSON());
+    return rows.map(mapProductRow);
   }
 
   // In-memory fallback
@@ -57,13 +88,15 @@ export async function listProducts({ category, featured, status } = {}) {
   return items.sort(byOrder);
 }
 
-export async function getProductBySlug(slug) {
-  if (hasDatabase) {
-    const row = await Product.findOne({
-      where: { slug },
-      include: [{ model: Category, as: 'category', attributes: ['slug', 'name'] }],
-    });
-    return row ? row.toJSON() : null;
+export async function getProductBySlug(db, slug) {
+  if (db) {
+    const rows = await db
+      .select({ product: products, category: categories })
+      .from(products)
+      .leftJoin(categories, eq(products.categoryId, categories.id))
+      .where(eq(products.slug, slug))
+      .limit(1);
+    return rows.length ? mapProductRow(rows[0]) : null;
   }
 
   const product = seedProducts.find((p) => p.slug === slug);
@@ -72,10 +105,19 @@ export async function getProductBySlug(slug) {
 
 // ------------------------------- Inquiries -----------------------------------
 
-export async function createInquiry(data) {
-  if (hasDatabase) {
-    const row = await Inquiry.create(data);
-    return row.toJSON();
+export async function createInquiry(db, data) {
+  if (db) {
+    const [row] = await db
+      .insert(inquiries)
+      .values({
+        name: data.name,
+        email: data.email,
+        productSlug: data.productSlug ?? null,
+        subject: data.subject ?? null,
+        message: data.message,
+      })
+      .returning({ id: inquiries.id });
+    return { ...data, id: row?.id ?? null, persisted: true };
   }
 
   // Without a DB we can't persist, but we still acknowledge the request so the
@@ -87,5 +129,3 @@ export async function createInquiry(data) {
   });
   return { ...data, id: null, persisted: false, createdAt: new Date().toISOString() };
 }
-
-export { hasDatabase };

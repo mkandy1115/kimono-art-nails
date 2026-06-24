@@ -1,86 +1,134 @@
-import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import compression from 'compression';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
+import { secureHeaders } from 'hono/secure-headers';
 
-import routes from './routes/index.js';
-import { sequelize, hasDatabase } from './models/index.js';
+import { getDb } from './db/client.js';
+import {
+  listCategories,
+  listProducts,
+  getProductBySlug,
+  createInquiry,
+} from './repository.js';
 
-const app = express();
+// ----------------------------------------------------------------------------
+// KIMONO Art Nails API — Hono app for Cloudflare Workers.
+//
+// On Workers there is no `app.listen()`: we `export default app`, and the
+// runtime invokes `app.fetch` for each request. Environment values come from
+// `c.env` (Worker secrets / vars), not `process.env`.
+// ----------------------------------------------------------------------------
 
-// ------------------------------- Security ------------------------------------
-app.disable('x-powered-by');
-app.use(helmet());
-app.use(compression());
+const app = new Hono();
 
-// --------------------------------- CORS --------------------------------------
-// Allow the configured frontend origins. "*" allows any origin, which is fine
-// for a public, read-only catalog API.
-const rawOrigins = process.env.ALLOWED_ORIGINS?.trim();
-const corsOptions =
-  !rawOrigins || rawOrigins === '*'
-    ? { origin: true }
-    : {
-        origin: rawOrigins.split(',').map((o) => o.trim()).filter(Boolean),
-      };
-app.use(cors(corsOptions));
+app.use('*', logger());
+app.use('*', secureHeaders());
 
-// ------------------------------- Parsing/logs --------------------------------
-app.use(express.json({ limit: '100kb' }));
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+// CORS — allow the configured frontend origin(s). `ALLOWED_ORIGINS` is a
+// comma-separated list, or "*" for any origin (fine for a public catalog).
+app.use('/api/*', (c, next) => {
+  const raw = c.env.ALLOWED_ORIGINS?.trim();
+  const handler = cors({
+    origin: !raw || raw === '*' ? '*' : raw.split(',').map((o) => o.trim()).filter(Boolean),
+    allowMethods: ['GET', 'POST', 'OPTIONS'],
+    allowHeaders: ['Content-Type'],
+    maxAge: 86400,
+  });
+  return handler(c, next);
+});
 
-// --------------------------------- Routes ------------------------------------
-app.get('/', (req, res) => {
-  res.json({
+// Attach a per-request Drizzle client (or null for in-memory fallback).
+app.use('/api/*', async (c, next) => {
+  c.set('db', getDb(c.env.DATABASE_URL));
+  await next();
+});
+
+// --------------------------------- Root --------------------------------------
+app.get('/', (c) =>
+  c.json({
     name: 'KIMONO Art Nails API',
     docs: '/api/health, /api/categories, /api/products, /api/products/:slug, POST /api/inquiries',
-  });
+  })
+);
+
+// -------------------------------- Health -------------------------------------
+app.get('/api/health', (c) =>
+  c.json({
+    status: 'ok',
+    service: 'kimono-art-nails-api',
+    mode: c.get('db') ? 'postgres' : 'in-memory',
+    time: new Date().toISOString(),
+  })
+);
+
+// ------------------------------ Categories -----------------------------------
+app.get('/api/categories', async (c) => {
+  const data = await listCategories(c.get('db'));
+  return c.json({ data });
 });
 
-app.use('/api', routes);
+// ------------------------------- Products ------------------------------------
+app.get('/api/products', async (c) => {
+  const { category, featured, status } = c.req.query();
+  const filters = {};
+  if (category) filters.category = category;
+  if (status) filters.status = status;
+  if (featured !== undefined) filters.featured = featured === 'true' || featured === '1';
+
+  const data = await listProducts(c.get('db'), filters);
+  return c.json({ data });
+});
+
+app.get('/api/products/:slug', async (c) => {
+  const product = await getProductBySlug(c.get('db'), c.req.param('slug'));
+  if (!product) return c.json({ error: 'Product not found' }, 404);
+  return c.json({ data: product });
+});
+
+// ------------------------------- Inquiries -----------------------------------
+const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+app.post('/api/inquiries', async (c) => {
+  let body;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: 'Invalid JSON in request body' }, 400);
+  }
+
+  const { name, email, productSlug, subject, message } = body ?? {};
+
+  const errors = [];
+  if (!name || String(name).trim().length < 2) errors.push('A name is required.');
+  if (!email || !isEmail(String(email))) errors.push('A valid email is required.');
+  if (!message || String(message).trim().length < 5) errors.push('A message is required.');
+  if (errors.length) {
+    return c.json({ error: 'Validation failed', details: errors }, 400);
+  }
+
+  const inquiry = await createInquiry(c.get('db'), {
+    name: String(name).trim(),
+    email: String(email).trim(),
+    productSlug: productSlug ? String(productSlug).trim() : null,
+    subject: subject ? String(subject).trim() : null,
+    message: String(message).trim(),
+  });
+
+  return c.json(
+    {
+      data: { id: inquiry.id ?? null, persisted: inquiry.persisted !== false },
+      message: 'Thank you — your inquiry has been received. We will reply by email soon.',
+    },
+    201
+  );
+});
 
 // ------------------------------- 404 + errors --------------------------------
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not found' });
-});
+app.notFound((c) => c.json({ error: 'Not found' }, 404));
 
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  // Malformed JSON bodies from body-parser are client errors, not server errors.
-  if (err.type === 'entity.parse.failed' || err instanceof SyntaxError) {
-    return res.status(400).json({ error: 'Invalid JSON in request body' });
-  }
+app.onError((err, c) => {
   console.error('[error]', err);
-  res.status(err.status || 500).json({ error: 'Internal server error' });
+  return c.json({ error: 'Internal server error' }, 500);
 });
-
-// -------------------------------- Startup ------------------------------------
-const port = process.env.PORT || 3000;
-
-async function start() {
-  if (hasDatabase) {
-    try {
-      await sequelize.authenticate();
-      // `alter: true` keeps the schema in sync without destructive migrations —
-      // appropriate for a tiny catalog. Run `npm run seed` to populate data.
-      await sequelize.sync({ alter: true });
-      console.log('[db] Connected to PostgreSQL and synced models.');
-    } catch (err) {
-      console.error('[db] Could not connect to the database:', err.message);
-      console.error('[db] Falling back is not possible mid-run — fix DATABASE_URL and restart.');
-      process.exit(1);
-    }
-  } else {
-    console.log('[db] No DATABASE_URL set — serving the in-memory seed catalog.');
-  }
-
-  app.listen(port, '0.0.0.0', () => {
-    console.log(`[api] KIMONO Art Nails API running on port ${port}`);
-  });
-}
-
-start();
 
 export default app;

@@ -14,10 +14,9 @@ build/
 .env.*.local
 !.env.example
 
-# Local database (SQLite dev fallback)
-*.sqlite
-*.sqlite3
-api/dev.sqlite
+# Cloudflare Workers local dev secrets
+.dev.vars
+!.dev.vars.example
 
 # Logs
 logs/
