@@ -10,6 +10,7 @@ import {
   getProductBySlug,
   createInquiry,
 } from './repository.js';
+import images from './routes/images.js';
 
 // ----------------------------------------------------------------------------
 // KIMONO Art Nails API — Hono app for Cloudflare Workers.
@@ -43,11 +44,14 @@ app.use('/api/*', async (c, next) => {
   await next();
 });
 
+// Product photos from Cloudflare R2 (GET /images/<key>)
+app.route('/images', images);
+
 // --------------------------------- Root --------------------------------------
 app.get('/', (c) =>
   c.json({
     name: 'KIMONO Art Nails API',
-    docs: '/api/health, /api/categories, /api/products, /api/products/:slug, POST /api/inquiries',
+    docs: '/api/health, /api/categories, /api/products, /api/products/:slug, POST /api/inquiries, GET /images/*',
   })
 );
 
@@ -57,6 +61,7 @@ app.get('/api/health', (c) =>
     status: 'ok',
     service: 'kimono-art-nails-api',
     mode: c.get('db') ? 'postgres' : 'in-memory',
+    images: Boolean(c.env.PRODUCT_IMAGES),
     time: new Date().toISOString(),
   })
 );
@@ -70,7 +75,7 @@ app.get('/api/categories', async (c) => {
 // ------------------------------- Products ------------------------------------
 app.get('/api/products', async (c) => {
   const { category, featured, status } = c.req.query();
-  const filters = {};
+  const filters = { publicBaseUrl: c.env.API_PUBLIC_URL };
   if (category) filters.category = category;
   if (status) filters.status = status;
   if (featured !== undefined) filters.featured = featured === 'true' || featured === '1';
@@ -80,7 +85,9 @@ app.get('/api/products', async (c) => {
 });
 
 app.get('/api/products/:slug', async (c) => {
-  const product = await getProductBySlug(c.get('db'), c.req.param('slug'));
+  const product = await getProductBySlug(c.get('db'), c.req.param('slug'), {
+    publicBaseUrl: c.env.API_PUBLIC_URL,
+  });
   if (!product) return c.json({ error: 'Product not found' }, 404);
   return c.json({ data: product });
 });

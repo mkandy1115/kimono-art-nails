@@ -8,9 +8,20 @@
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true
-  }
+  },
 
-  // Secrets (DATABASE_URL) and vars (ALLOWED_ORIGINS) are NOT stored here.
+  // Cloudflare R2 bucket for product photos. Create the bucket in the dashboard
+  // (R2 → Create bucket) with the same name, then attach this binding to the
+  // Worker under Settings → Bindings if deploying via the dashboard.
+  "r2_buckets": [
+    {
+      "binding": "PRODUCT_IMAGES",
+      "bucket_name": "kimono-product-images"
+    }
+  ]
+
+  // Secrets (DATABASE_URL) and vars (ALLOWED_ORIGINS, API_PUBLIC_URL) are NOT
+  // stored here.
   // - Local dev:   put them in api/.dev.vars (git-ignored).
   // - Production:  add them in the Cloudflare dashboard
   //                (Workers > your worker > Settings > Variables),

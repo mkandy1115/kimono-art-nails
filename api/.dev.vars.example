@@ -10,3 +10,8 @@ DATABASE_URL=
 
 # Comma-separated allowed frontend origins, or "*" for any.
 ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+
+# Base URL of this Worker (no trailing slash). When set, product `image` and
+# `gallery` values that are R2 keys (e.g. sakura-haze/main.jpg) are expanded
+# to full URLs like http://localhost:8787/images/sakura-haze/main.jpg
+API_PUBLIC_URL=http://localhost:8787

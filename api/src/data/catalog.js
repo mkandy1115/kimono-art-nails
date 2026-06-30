@@ -9,6 +9,12 @@
 // Each product carries a `theme` (a pair of palette colors). The frontend uses
 // it to render an elegant illustrated placeholder until the shop owner uploads
 // real photos by filling in the `image` / `gallery` fields.
+//
+// Product photos are served from Cloudflare R2 via GET /images/<key> on the
+// Worker. Store a relative key in `image`, for example:
+//   image: 'sakura-haze/main.jpg'
+// Set API_PUBLIC_URL on the Worker and the API expands that to a full URL.
+// Upload the file to the R2 bucket `kimono-product-images` with the same key.
 // ----------------------------------------------------------------------------
 
 export const categories = [

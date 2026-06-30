@@ -37,6 +37,10 @@ src/
 │   ├── schema.js   # Drizzle tables (categories, products, inquiries)
 │   └── client.js   # Neon serverless + Drizzle client factory
 ├── repository.js   # Data access (Drizzle queries + in-memory fallback)
+├── routes/
+│   └── images.js   # GET /images/* — serves photos from R2
+├── lib/
+│   └── media.js    # Expands R2 keys to full image URLs
 ├── data/catalog.js # Catalog seed data (single source of truth)
 └── seed.js         # Loads catalog into Neon (run locally)
 ```
@@ -44,7 +48,7 @@ src/
 ## Endpoints
 
 `/api/health`, `/api/categories`, `/api/products`, `/api/products/:slug`,
-`POST /api/inquiries`.
+`POST /api/inquiries`, `GET /images/*` (R2 product photos).
 
 Without `DATABASE_URL` the API serves a built-in sample catalog from memory.
 With it set, the API uses PostgreSQL (Neon) via Drizzle over the Neon

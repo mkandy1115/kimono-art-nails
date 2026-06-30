@@ -1,6 +1,7 @@
 import { and, asc, eq } from 'drizzle-orm';
 import { products, categories, inquiries } from './db/schema.js';
 import { products as seedProducts, categories as seedCategories } from './data/catalog.js';
+import { withResolvedMedia } from './lib/media.js';
 
 // ----------------------------------------------------------------------------
 // Data-access layer.
@@ -14,38 +15,44 @@ import { products as seedProducts, categories as seedCategories } from './data/c
 const byOrder = (a, b) =>
   (a.displayOrder ?? 0) - (b.displayOrder ?? 0) || a.name.localeCompare(b.name);
 
-function decorateSeedProduct(product) {
+function decorateSeedProduct(product, publicBaseUrl) {
   const category = seedCategories.find((c) => c.slug === product.categorySlug) || null;
-  return {
-    ...product,
-    category: category ? { slug: category.slug, name: category.name } : null,
-  };
+  return withResolvedMedia(
+    {
+      ...product,
+      category: category ? { slug: category.slug, name: category.name } : null,
+    },
+    publicBaseUrl
+  );
 }
 
 // Maps a joined products+categories row into the API's product shape.
-function mapProductRow(row) {
+function mapProductRow(row, publicBaseUrl) {
   const p = row.product ?? row;
   const category = row.category && row.category.slug ? row.category : null;
-  return {
-    slug: p.slug,
-    name: p.name,
-    tagline: p.tagline,
-    description: p.description,
-    price: p.price,
-    currency: p.currency,
-    categorySlug: category?.slug ?? null,
-    shape: p.shape,
-    length: p.length,
-    pieces: p.pieces,
-    materials: p.materials,
-    status: p.status,
-    featured: p.featured,
-    image: p.image,
-    gallery: p.gallery ?? [],
-    theme: p.theme ?? {},
-    displayOrder: p.displayOrder,
-    category: category ? { slug: category.slug, name: category.name } : null,
-  };
+  return withResolvedMedia(
+    {
+      slug: p.slug,
+      name: p.name,
+      tagline: p.tagline,
+      description: p.description,
+      price: p.price,
+      currency: p.currency,
+      categorySlug: category?.slug ?? null,
+      shape: p.shape,
+      length: p.length,
+      pieces: p.pieces,
+      materials: p.materials,
+      status: p.status,
+      featured: p.featured,
+      image: p.image,
+      gallery: p.gallery ?? [],
+      theme: p.theme ?? {},
+      displayOrder: p.displayOrder,
+      category: category ? { slug: category.slug, name: category.name } : null,
+    },
+    publicBaseUrl
+  );
 }
 
 // ----------------------------- Categories -----------------------------------
@@ -63,7 +70,7 @@ export async function listCategories(db) {
 
 // ------------------------------- Products ------------------------------------
 
-export async function listProducts(db, { category, featured, status } = {}) {
+export async function listProducts(db, { category, featured, status, publicBaseUrl } = {}) {
   if (db) {
     const conditions = [];
     if (featured !== undefined) conditions.push(eq(products.featured, featured));
@@ -77,18 +84,18 @@ export async function listProducts(db, { category, featured, status } = {}) {
       .where(conditions.length ? and(...conditions) : undefined)
       .orderBy(asc(products.displayOrder), asc(products.name));
 
-    return rows.map(mapProductRow);
+    return rows.map((row) => mapProductRow(row, publicBaseUrl));
   }
 
   // In-memory fallback
-  let items = seedProducts.map(decorateSeedProduct);
+  let items = seedProducts.map((p) => decorateSeedProduct(p, publicBaseUrl));
   if (category) items = items.filter((p) => p.categorySlug === category);
   if (featured !== undefined) items = items.filter((p) => p.featured === featured);
   if (status) items = items.filter((p) => p.status === status);
   return items.sort(byOrder);
 }
 
-export async function getProductBySlug(db, slug) {
+export async function getProductBySlug(db, slug, { publicBaseUrl } = {}) {
   if (db) {
     const rows = await db
       .select({ product: products, category: categories })
@@ -96,11 +103,11 @@ export async function getProductBySlug(db, slug) {
       .leftJoin(categories, eq(products.categoryId, categories.id))
       .where(eq(products.slug, slug))
       .limit(1);
-    return rows.length ? mapProductRow(rows[0]) : null;
+    return rows.length ? mapProductRow(rows[0], publicBaseUrl) : null;
   }
 
   const product = seedProducts.find((p) => p.slug === slug);
-  return product ? decorateSeedProduct(product) : null;
+  return product ? decorateSeedProduct(product, publicBaseUrl) : null;
 }
 
 // ------------------------------- Inquiries -----------------------------------

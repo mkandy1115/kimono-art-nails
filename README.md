@@ -93,7 +93,7 @@ cp ui/.env.example ui/.env
 
 | File            | Used by                                   | Keys                            |
 | --------------- | ----------------------------------------- | ------------------------------- |
-| `api/.dev.vars` | `wrangler dev` (the Worker)               | `DATABASE_URL`, `ALLOWED_ORIGINS` |
+| `api/.dev.vars` | `wrangler dev` (the Worker)               | `DATABASE_URL`, `ALLOWED_ORIGINS`, `API_PUBLIC_URL` |
 | `api/.env`      | `db:push` / `db:migrate` / `seed` (Node)  | `DATABASE_URL`                  |
 | `ui/.env`       | Vite build                                | `VITE_API_URL`                  |
 
@@ -152,6 +152,10 @@ git push
    - **Secret** `DATABASE_URL` = your Neon **pooled** connection string
    - **Variable** `ALLOWED_ORIGINS` = your Pages URL, e.g.
      `https://kimono-art-nails.pages.dev` (you can temporarily use `*`)
+   - **Variable** `API_PUBLIC_URL` = this Worker's public URL (no trailing
+     slash), e.g. `https://kimono-art-nails-api.your-subdomain.workers.dev`
+   - **R2 binding** `PRODUCT_IMAGES` → bucket `kimono-product-images` (create
+     the bucket under R2 first)
    - Re‑deploy so the variables take effect.
 4. Verify: visit `https://<your-worker>.workers.dev/api/health` — it should
    report `"mode":"postgres"` once `DATABASE_URL` is set.
@@ -209,12 +213,49 @@ Each product supports:
 > fallback to reflect new designs (optional — it only shows when the API is
 > unreachable).
 
-### Adding real product photos
+### Adding real product photos (Cloudflare R2)
 
-Set a product's `image` field to a public image URL (and optionally fill
-`gallery` with more URLs). When `image` is set, the UI shows the photo instead
-of the illustration. You can host images anywhere public (e.g. Cloudflare R2,
-Cloudinary, or an `/images` folder in `ui/public`).
+Product photos are served by the API Worker at **`GET /images/<key>`** from an R2
+bucket bound as `PRODUCT_IMAGES`.
+
+**1. Create the bucket** in Cloudflare: **R2 → Create bucket** → name it
+`kimono-product-images` (must match `api/wrangler.jsonc`).
+
+**2. Attach the binding** to your Worker: **Workers → your API → Settings →
+Bindings → R2 bucket** → variable name `PRODUCT_IMAGES`, bucket
+`kimono-product-images`.
+
+**3. Set `API_PUBLIC_URL`** on the Worker (e.g.
+`https://kimono-art-nails-api.your-subdomain.workers.dev`, no trailing slash).
+Locally, add it to `api/.dev.vars` as `http://localhost:8787`.
+
+**4. Upload photos** to R2 with keys that match your catalog, e.g.:
+
+```text
+sakura-haze/main.jpg
+kinpaku-gold-leaf/main.jpg
+```
+
+Dashboard: R2 → bucket → Upload. Or from your machine:
+
+```bash
+cd api
+npx wrangler r2 object put kimono-product-images/sakura-haze/main.jpg --file=./path/to/photo.jpg
+```
+
+**5. Point products at those keys** in `api/src/data/catalog.js`:
+
+```js
+image: 'sakura-haze/main.jpg',
+gallery: ['sakura-haze/detail-1.jpg', 'sakura-haze/detail-2.jpg'],
+```
+
+Then `npm run seed`. The API expands keys to full URLs using `API_PUBLIC_URL`;
+the UI's `ProductVisual` component shows the photo instead of the SVG
+placeholder.
+
+You can still use a full `https://...` URL in `image` if the file is hosted
+elsewhere.
 
 ---
 
@@ -229,6 +270,7 @@ Base path: `/api`
 | GET    | `/products`        | List products (`?category=`, `?featured=`, `?status=`) |
 | GET    | `/products/:slug`  | Single product                               |
 | POST   | `/inquiries`       | Submit an order/contact inquiry              |
+| GET    | `/images/*`        | Product photo from R2 (e.g. `/images/sakura-haze/main.jpg`) |
 
 `POST /api/inquiries` body:
 
