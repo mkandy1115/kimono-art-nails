@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SectionTitle from '../components/SectionTitle.jsx';
 import ProductCard from '../components/ProductCard.jsx';
-import NailIllustration from '../components/NailIllustration.jsx';
+import ProductVisual from '../components/ProductVisual.jsx';
 import { ArrowIcon } from '../components/icons.jsx';
 import { fetchProducts, fetchCategories } from '../api/client.js';
+import { productByDisplayOrder } from '../lib/catalog.js';
 import useReveal from '../hooks/useReveal.js';
 
 const STEPS = [
@@ -26,26 +27,28 @@ const STEPS = [
 ];
 
 export default function Home() {
-  const [featured, setFeatured] = useState([]);
+  const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-    Promise.all([fetchProducts({ featured: true }), fetchCategories()]).then(
-      ([prod, cats]) => {
-        if (!active) return;
-        setFeatured(prod.data.slice(0, 4));
-        setCategories(cats.data.slice(0, 4));
-        setLoading(false);
-      }
-    );
+    Promise.all([fetchProducts(), fetchCategories()]).then(([prod, cats]) => {
+      if (!active) return;
+      setProducts(prod.data);
+      setCategories(cats.data.slice(0, 4));
+      setLoading(false);
+    });
     return () => {
       active = false;
     };
   }, []);
 
-  useReveal([loading, featured.length, categories.length]);
+  const showcasePrimary = productByDisplayOrder(products, 1);
+  const showcaseSecondary = productByDisplayOrder(products, 4);
+  const collectionPreview = products.slice(0, 4);
+
+  useReveal([loading, products.length, categories.length]);
 
   return (
     <>
@@ -74,20 +77,28 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="hero__art" aria-hidden="true">
-            <div className="hero__art-card">
-              <NailIllustration
-                theme={{ from: '#F7DDE6', to: '#E8A7B3', accent: '#D8B57A' }}
-                seed="hero-sakura"
-              />
+          {(showcasePrimary || showcaseSecondary) && (
+            <div className="hero__art">
+              {showcasePrimary && (
+                <Link
+                  to={`/shop/${showcasePrimary.slug}`}
+                  className="hero__art-card"
+                  aria-label={`View ${showcasePrimary.name}`}
+                >
+                  <ProductVisual product={showcasePrimary} className="hero__art-img" />
+                </Link>
+              )}
+              {showcaseSecondary && (
+                <Link
+                  to={`/shop/${showcaseSecondary.slug}`}
+                  className="hero__art-card hero__art-card--small"
+                  aria-label={`View ${showcaseSecondary.name}`}
+                >
+                  <ProductVisual product={showcaseSecondary} className="hero__art-img" />
+                </Link>
+              )}
             </div>
-            <div className="hero__art-card hero__art-card--small">
-              <NailIllustration
-                theme={{ from: '#F3ECE9', to: '#E7D9D4', accent: '#D8B57A' }}
-                seed="hero-gold"
-              />
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -108,7 +119,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="grid grid--cards">
-              {featured.map((p) => (
+              {collectionPreview.map((p) => (
                 <div key={p.slug} className="reveal">
                   <ProductCard product={p} />
                 </div>
@@ -128,11 +139,13 @@ export default function Home() {
       <section className="section section--base">
         <div className="container split">
           <div className="split__art reveal">
-            <NailIllustration
-              theme={{ from: '#F2BFCB', to: '#C7B4AA', accent: '#D8B57A' }}
-              seed="about-teaser"
-              className="split__illustration"
-            />
+            {showcaseSecondary ? (
+              <Link to={`/shop/${showcaseSecondary.slug}`} aria-label={`View ${showcaseSecondary.name}`}>
+                <ProductVisual product={showcaseSecondary} className="split__illustration" />
+              </Link>
+            ) : (
+              <div className="split__illustration card--skeleton" />
+            )}
           </div>
           <div className="split__copy reveal">
             <span className="section-title__eyebrow">Our story</span>

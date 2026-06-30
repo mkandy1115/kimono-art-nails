@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { sql } from 'drizzle-orm';
+import { sql, notInArray } from 'drizzle-orm';
 import * as schema from './db/schema.js';
 import { categories as seedCategories, products as seedProducts } from './data/catalog.js';
 
@@ -12,7 +12,8 @@ import { categories as seedCategories, products as seedProducts } from './data/c
 //   npm run seed      # then load the data
 //
 // Runs locally with Node (reads DATABASE_URL from api/.env). Safe to re-run:
-// it upserts categories and products by their unique `slug`.
+// it upserts categories and products by their unique `slug`, and removes
+// products whose slugs are no longer in catalog.js.
 // ----------------------------------------------------------------------------
 
 const databaseUrl = process.env.DATABASE_URL?.trim();
@@ -83,6 +84,15 @@ async function seed() {
       });
   }
   console.log(`[seed] Upserted ${seedProducts.length} products.`);
+
+  const keepSlugs = seedProducts.map((p) => p.slug);
+  const removed = await db
+    .delete(products)
+    .where(notInArray(products.slug, keepSlugs))
+    .returning({ slug: products.slug });
+  if (removed.length) {
+    console.log(`[seed] Removed ${removed.length} stale product(s): ${removed.map((r) => r.slug).join(', ')}`);
+  }
 
   console.log('[seed] Done.');
 }

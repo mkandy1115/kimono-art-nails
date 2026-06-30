@@ -1,7 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SectionTitle from '../components/SectionTitle.jsx';
-import NailIllustration from '../components/NailIllustration.jsx';
+import ProductVisual from '../components/ProductVisual.jsx';
 import { ArrowIcon } from '../components/icons.jsx';
+import { fetchProducts } from '../api/client.js';
+import { productByDisplayOrder } from '../lib/catalog.js';
 import useReveal from '../hooks/useReveal.js';
 
 const VALUES = [
@@ -20,7 +23,21 @@ const VALUES = [
 ];
 
 export default function About() {
-  useReveal([]);
+  const [showcase, setShowcase] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    fetchProducts().then(({ data }) => {
+      if (!active) return;
+      setShowcase(productByDisplayOrder(data, 1));
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useReveal([showcase?.slug]);
+
   return (
     <>
       <section className="page-hero">
@@ -37,11 +54,13 @@ export default function About() {
       <section className="section">
         <div className="container split">
           <div className="split__art reveal">
-            <NailIllustration
-              theme={{ from: '#F7DDE6', to: '#E8A7B3', accent: '#D8B57A' }}
-              seed="about-main"
-              className="split__illustration"
-            />
+            {showcase ? (
+              <Link to={`/shop/${showcase.slug}`} aria-label={`View ${showcase.name}`}>
+                <ProductVisual product={showcase} className="split__illustration" />
+              </Link>
+            ) : (
+              <div className="split__illustration card--skeleton" />
+            )}
           </div>
           <div className="split__copy reveal">
             <span className="section-title__eyebrow">Our philosophy</span>
