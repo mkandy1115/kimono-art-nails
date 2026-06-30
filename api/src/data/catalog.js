@@ -50,12 +50,12 @@ export const categories = [
 
 export const products = [
   {
-    slug: 'sakura-haze',
-    name: 'Sakura Haze',
+    slug: 'sakura',
+    name: 'Sakura',
     tagline: 'Falling cherry blossoms on a blush sky',
     description:
       'Hand-painted cherry blossom petals drift across a soft blush gradient, finished with delicate gold-leaf flecks. Inspired by hanami season, when sakura petals fill the air. Each chip is sealed with a high-gloss top coat for a glass-like shine.',
-    price: 38.0,
+    price: 30.0,
     currency: 'USD',
     categorySlug: 'seasonal',
     shape: 'Almond',
@@ -64,7 +64,7 @@ export const products = [
     materials: 'Soak-off gel, gold leaf, hand-painted acrylic detail',
     status: 'available',
     featured: true,
-    image: null,
+    image: 'sakura-1.jpg',
     gallery: [],
     theme: { from: '#F7DDE6', to: '#E8A7B3', accent: '#D8B57A' },
     displayOrder: 1,
