@@ -23,7 +23,9 @@ import images from './routes/images.js';
 const app = new Hono();
 
 app.use('*', logger());
-app.use('*', secureHeaders());
+// Security headers for API JSON routes only — not /images/* (CORP: same-origin
+// would block <img> embeds from kimono-art-nails.pages.dev → workers.dev).
+app.use('/api/*', secureHeaders());
 
 // CORS — allow the configured frontend origin(s). `ALLOWED_ORIGINS` is a
 // comma-separated list, or "*" for any origin (fine for a public catalog).

@@ -34,6 +34,7 @@ images.get('/*', async (c) => {
     object.writeHttpMetadata(headers);
     headers.set('ETag', object.httpEtag);
     headers.set('Cache-Control', 'public, max-age=86400');
+    headers.set('Cross-Origin-Resource-Policy', 'cross-origin');
 
     return new Response(object.body, { status: 200, headers });
   } catch (error) {
