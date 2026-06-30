@@ -9,6 +9,10 @@
   "observability": {
     "enabled": true
   },
+  "vars": {
+    "ALLOWED_ORIGINS": "https://kimono-art-nails.pages.dev",
+    "API_PUBLIC_URL": "https://kimono-art-nails.kyo-andrus.workers.dev"
+  }
 
   // Cloudflare R2 bucket for product photos. Create the bucket in the dashboard
   // (R2 → Create bucket) with the same name, then attach this binding to the
