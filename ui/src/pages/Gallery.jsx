@@ -46,11 +46,11 @@ export default function Gallery() {
             </div>
           ) : (
             <div className="masonry">
-              {items.map((p, i) => (
+              {items.map((p) => (
                 <Link
                   key={p.slug}
                   to={`/shop/${p.slug}`}
-                  className={`masonry__item reveal${i % 3 === 1 ? ' masonry__item--tall' : ''}`}
+                  className="masonry__item reveal"
                 >
                   <ProductVisual product={p} className="masonry__img" />
                   <span className="masonry__overlay">

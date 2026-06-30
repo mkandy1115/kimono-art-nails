@@ -37,7 +37,7 @@ export default function NailIllustration({ theme = {}, seed = 'kimono', classNam
   return (
     <svg
       className={className}
-      viewBox="0 0 330 200"
+      viewBox="0 0 330 330"
       role="img"
       aria-label="Illustration of a nail chip set"
       preserveAspectRatio="xMidYMid slice"
@@ -59,16 +59,16 @@ export default function NailIllustration({ theme = {}, seed = 'kimono', classNam
       </defs>
 
       {/* Soft background */}
-      <rect width="330" height="200" fill={`url(#bg-${id})`} />
-      <rect width="330" height="200" fill={`url(#glow-${id})`} />
+      <rect width="330" height="330" fill={`url(#bg-${id})`} />
+      <rect width="330" height="330" fill={`url(#glow-${id})`} />
 
       {/* Gold flecks (kinpaku) */}
       {flecks.map((f, i) => (
         <circle key={i} cx={f.cx} cy={f.cy} r={f.r} fill={accent} opacity={f.o} />
       ))}
 
-      {/* Nail chips, arranged like a fanned set */}
-      <g transform="translate(0 18)">
+      {/* Nail chips, arranged like a fanned set — centered in square frame */}
+      <g transform="translate(0 83)">
         {nails.map((n, i) => {
           const top = 168 - n.h;
           return (

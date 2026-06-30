@@ -11,7 +11,7 @@ export default function ProductVisual({ product, className }) {
         alt={product.name}
         loading="lazy"
         width="330"
-        height="200"
+        height="330"
       />
     );
   }
