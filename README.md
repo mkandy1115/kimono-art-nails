@@ -154,8 +154,7 @@ git push
      `https://kimono-art-nails.pages.dev` (you can temporarily use `*`)
    - **Variable** `API_PUBLIC_URL` = this Worker's public URL (no trailing
      slash), e.g. `https://kimono-art-nails-api.your-subdomain.workers.dev`
-   - **R2 binding** `PRODUCT_IMAGES` → bucket `kimono-product-images` (create
-     the bucket under R2 first)
+   - **R2 binding** `PRODUCT_IMAGE` → bucket `product-image`
    - Re‑deploy so the variables take effect.
 4. Verify: visit `https://<your-worker>.workers.dev/api/health` — it should
    report `"mode":"postgres"` once `DATABASE_URL` is set.
@@ -216,14 +215,14 @@ Each product supports:
 ### Adding real product photos (Cloudflare R2)
 
 Product photos are served by the API Worker at **`GET /images/<key>`** from an R2
-bucket bound as `PRODUCT_IMAGES`.
+bucket bound as `PRODUCT_IMAGE`.
 
-**1. Create the bucket** in Cloudflare: **R2 → Create bucket** → name it
-`kimono-product-images` (must match `api/wrangler.jsonc`).
+**1. R2 bucket** — use your existing bucket **`product-image`** (must match
+`api/wrangler.jsonc`).
 
 **2. Attach the binding** to your Worker: **Workers → your API → Settings →
-Bindings → R2 bucket** → variable name `PRODUCT_IMAGES`, bucket
-`kimono-product-images`.
+Bindings → R2 bucket** → variable name `PRODUCT_IMAGE`, bucket
+`product-image`.
 
 **3. Set `API_PUBLIC_URL`** on the Worker (e.g.
 `https://kimono-art-nails-api.your-subdomain.workers.dev`, no trailing slash).
@@ -240,7 +239,7 @@ Dashboard: R2 → bucket → Upload. Or from your machine:
 
 ```bash
 cd api
-npx wrangler r2 object put kimono-product-images/sakura-haze/main.jpg --file=./path/to/photo.jpg
+npx wrangler r2 object put product-image/sakura-haze/main.jpg --file=./path/to/photo.jpg
 ```
 
 **5. Point products at those keys** in `api/src/data/catalog.js`:

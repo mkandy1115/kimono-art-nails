@@ -61,7 +61,7 @@ app.get('/api/health', (c) =>
     status: 'ok',
     service: 'kimono-art-nails-api',
     mode: c.get('db') ? 'postgres' : 'in-memory',
-    images: Boolean(c.env.PRODUCT_IMAGES),
+    images: Boolean(c.env.PRODUCT_IMAGE),
     time: new Date().toISOString(),
   })
 );

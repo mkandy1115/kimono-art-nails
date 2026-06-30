@@ -1,19 +1,19 @@
 import { Hono } from 'hono';
 
 // ----------------------------------------------------------------------------
-// Serves product photos from the Cloudflare R2 bucket bound as PRODUCT_IMAGES.
+// Serves product photos from the Cloudflare R2 bucket bound as PRODUCT_IMAGE.
 //
 //   GET /images/sakura-haze/main.jpg  →  R2 object key "sakura-haze/main.jpg"
 //
 // Upload files with the Cloudflare dashboard or:
-//   npx wrangler r2 object put kimono-product-images/sakura-haze/main.jpg --file=./photo.jpg
+//   npx wrangler r2 object put product-image/sakura-haze/main.jpg --file=./photo.jpg
 // ----------------------------------------------------------------------------
 
 const images = new Hono();
 
 images.get('/*', async (c) => {
   try {
-    const bucket = c.env.PRODUCT_IMAGES;
+    const bucket = c.env.PRODUCT_IMAGE;
     if (!bucket) {
       return c.json({ error: 'Image storage is not configured (missing R2 binding)' }, 503);
     }

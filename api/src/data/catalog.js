@@ -14,7 +14,7 @@
 // Worker. Store a relative key in `image`, for example:
 //   image: 'sakura-haze/main.jpg'
 // Set API_PUBLIC_URL on the Worker and the API expands that to a full URL.
-// Upload the file to the R2 bucket `kimono-product-images` with the same key.
+// Upload the file to the R2 bucket `product-image` with the same key.
 // ----------------------------------------------------------------------------
 
 export const categories = [

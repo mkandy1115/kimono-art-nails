@@ -15,8 +15,8 @@
   // Worker under Settings → Bindings if deploying via the dashboard.
   "r2_buckets": [
     {
-      "binding": "PRODUCT_IMAGES",
-      "bucket_name": "kimono-product-images"
+      "binding": "PRODUCT_IMAGE",
+      "bucket_name": "product-image"
     }
   ]
 
