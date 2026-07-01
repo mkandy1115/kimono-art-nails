@@ -125,13 +125,19 @@ app.post('/api/inquiries', async (c) => {
     return c.json({ error: 'Validation failed', details: errors }, 400);
   }
 
-  const inquiry = await createInquiry(c.get('db'), {
-    name: trimmedName,
-    email: trimmedEmail,
-    productSlug: trimmedSlug,
-    subject: trimmedSubject,
-    message: trimmedMessage,
-  });
+  let inquiry;
+  try {
+    inquiry = await createInquiry(c.get('db'), {
+      name: trimmedName,
+      email: trimmedEmail,
+      productSlug: trimmedSlug,
+      subject: trimmedSubject,
+      message: trimmedMessage,
+    });
+  } catch (err) {
+    console.error('[inquiry db]', err);
+    return c.json({ error: 'Could not save your inquiry. Please try again.' }, 500);
+  }
 
   let mail = { sent: false };
   try {
@@ -146,8 +152,9 @@ app.post('/api/inquiries', async (c) => {
       console.warn('[inquiry] WEB3FORMS_ACCESS_KEY not set — saved to DB only.');
     }
   } catch (err) {
+    // Inquiry is already persisted — do not fail the form if Web3Forms is down.
     console.error('[inquiry web3forms]', err);
-    return c.json({ error: 'Your message could not be sent.' }, 500);
+    mail = { sent: false, error: err.message };
   }
 
   return c.json(
@@ -155,7 +162,7 @@ app.post('/api/inquiries', async (c) => {
       data: {
         id: inquiry.id ?? null,
         persisted: inquiry.persisted !== false,
-        emailed: Boolean(c.env.WEB3FORMS_ACCESS_KEY?.trim() && mail.sent),
+        emailed: Boolean(mail.sent),
       },
       message: 'Thank you — your inquiry has been received. We will reply by email soon.',
     },

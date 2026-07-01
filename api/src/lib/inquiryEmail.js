@@ -39,11 +39,12 @@ export async function sendInquiryEmail(env, inquiry) {
       replyto: inquiry.email,
       subject: subjectLine,
       message: text,
+      from_name: 'KIMONO Art Nails',
     }),
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok || !data.success) {
+  if (res.status !== 200 || !data.success) {
     const detail = data.message || `Web3Forms responded with status ${res.status}`;
     throw new Error(detail);
   }
