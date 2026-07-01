@@ -7,33 +7,33 @@ import {
   ETSY_URL,
   ETSY_SHOP_NAME,
   CONTACT_EMAIL,
-  IG_PREFERRED_NOTE,
 } from '../lib/site.js';
 import useReveal from '../hooks/useReveal.js';
+import { useLocale } from '../i18n/LocaleContext.jsx';
 
 export default function Contact() {
+  const { t, messages } = useLocale();
+  const contact = messages.contact;
   useReveal([]);
+
   return (
     <>
       <section className="page-hero">
         <div className="container">
-          <span className="page-hero__eyebrow">Contact</span>
-          <h1 className="page-hero__title">Let's talk nails</h1>
-          <p className="page-hero__sub">
-            For orders and custom requests, Instagram DM is our preferred channel and the fastest
-            way to reach us. You can also email us or send an inquiry below.
-          </p>
+          <span className="page-hero__eyebrow">{contact.hero.eyebrow}</span>
+          <h1 className="page-hero__title">{contact.hero.title}</h1>
+          <p className="page-hero__sub">{contact.hero.sub}</p>
         </div>
       </section>
 
       <section className="section section--tight">
         <div className="container contact">
           <div className="contact__form reveal">
-            <SectionTitle title="Send an inquiry" align="left" />
+            <SectionTitle title={contact.form.title} align="left" />
             <p className="muted">
-              {IG_PREFERRED_NOTE} Ready-to-ship sets are also on{' '}
+              {t('common.igPreferredNote')} {contact.form.etsyIntro}{' '}
               <a href={ETSY_URL} target="_blank" rel="noreferrer">
-                Etsy
+                {t('common.etsyLink')}
               </a>
               .
             </p>
@@ -41,31 +41,25 @@ export default function Contact() {
           </div>
 
           <aside className="contact__aside reveal">
-            <h3 className="serif contact__aside-title">Other ways to reach us</h3>
+            <h3 className="serif contact__aside-title">{contact.aside.title}</h3>
             <a className="contact__link" href={INSTAGRAM_URL} target="_blank" rel="noreferrer">
-              <InstagramIcon /> {INSTAGRAM_HANDLE} (preferred)
+              <InstagramIcon /> {t('contact.aside.instagram', { handle: INSTAGRAM_HANDLE })}
             </a>
             <a className="contact__link" href={`mailto:${CONTACT_EMAIL}`}>
               <MailIcon /> {CONTACT_EMAIL}
             </a>
             <a className="contact__link" href={ETSY_URL} target="_blank" rel="noreferrer">
-              <EtsyIcon /> {ETSY_SHOP_NAME} on Etsy
+              <EtsyIcon /> {t('common.etsyOnEtsy', { etsyShop: ETSY_SHOP_NAME })}
             </a>
 
             <div className="contact__card">
-              <h4 className="contact__card-title">How ordering works</h4>
-              <p className="muted">
-                We discuss design details, pricing, and order specifics before purchase. Payment
-                for custom orders is through Venmo after the total is confirmed.
-              </p>
+              <h4 className="contact__card-title">{contact.cards.ordering.title}</h4>
+              <p className="muted">{contact.cards.ordering.text}</p>
             </div>
 
             <div className="contact__card">
-              <h4 className="contact__card-title">Ready-to-ship on Etsy</h4>
-              <p className="muted">
-                Browse in-stock nail sets on our Etsy shop — no custom consultation needed for
-                those listings.
-              </p>
+              <h4 className="contact__card-title">{contact.cards.etsy.title}</h4>
+              <p className="muted">{contact.cards.etsy.text}</p>
             </div>
           </aside>
         </div>

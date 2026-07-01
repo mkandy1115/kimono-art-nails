@@ -7,9 +7,13 @@ import {
   ETSY_SHOP_NAME,
   CONTACT_EMAIL,
 } from '../lib/site.js';
+import { useLocale } from '../i18n/LocaleContext.jsx';
 
 export default function Footer() {
+  const { t, messages } = useLocale();
   const year = new Date().getFullYear();
+  const links = messages.footer.links;
+
   return (
     <footer className="footer">
       <div className="footer__top container">
@@ -17,36 +21,33 @@ export default function Footer() {
           <img
             className="footer__logo-img"
             src="/logo-grey.png"
-            alt="KIMONO Art Nails"
+            alt={t('common.logoAlt')}
             width="180"
             height="48"
           />
-          <p className="footer__tagline">
-            Beauty of Japanese tradition, at your fingertips. Handcrafted press-on nail art in
-            limited, small-batch collections.
-          </p>
+          <p className="footer__tagline">{t('footer.tagline')}</p>
         </div>
 
-        <nav className="footer__col" aria-label="Explore">
-          <h4 className="footer__heading">Explore</h4>
-          <Link to="/shop">Shop</Link>
-          <Link to="/gallery">Gallery</Link>
-          <Link to="/about">About</Link>
-          <Link to="/faq">FAQ</Link>
-          <Link to="/custom-order">Custom Order</Link>
+        <nav className="footer__col" aria-label={t('footer.explore')}>
+          <h4 className="footer__heading">{t('footer.explore')}</h4>
+          <Link to="/shop">{links.shop}</Link>
+          <Link to="/gallery">{links.gallery}</Link>
+          <Link to="/about">{links.about}</Link>
+          <Link to="/faq">{links.faq}</Link>
+          <Link to="/custom-order">{links.customOrder}</Link>
         </nav>
 
-        <nav className="footer__col" aria-label="Help">
-          <h4 className="footer__heading">Help</h4>
-          <Link to="/faq#sizing">Sizing & fit</Link>
-          <Link to="/faq#shipping">Shipping</Link>
-          <Link to="/faq#orders">How to order</Link>
-          <Link to="/faq#care">Application & Care</Link>
-          <Link to="/contact">Contact</Link>
+        <nav className="footer__col" aria-label={t('footer.help')}>
+          <h4 className="footer__heading">{t('footer.help')}</h4>
+          <Link to="/faq#sizing">{links.sizing}</Link>
+          <Link to="/faq#shipping">{links.shipping}</Link>
+          <Link to="/faq#orders">{links.orders}</Link>
+          <Link to="/faq#care">{links.care}</Link>
+          <Link to="/contact">{links.contact}</Link>
         </nav>
 
         <div className="footer__col">
-          <h4 className="footer__heading">Stay in touch</h4>
+          <h4 className="footer__heading">{t('footer.stayInTouch')}</h4>
           <a className="footer__contact" href={INSTAGRAM_URL} target="_blank" rel="noreferrer">
             <InstagramIcon /> {INSTAGRAM_HANDLE}
           </a>
@@ -56,15 +57,13 @@ export default function Footer() {
           <a className="footer__contact" href={ETSY_URL} target="_blank" rel="noreferrer">
             <EtsyIcon /> {ETSY_SHOP_NAME}
           </a>
-          <p className="footer__note">
-            DM us on Instagram for the quickest reply. Ready-to-ship sets are on Etsy.
-          </p>
+          <p className="footer__note">{t('footer.note')}</p>
         </div>
       </div>
 
       <div className="footer__bottom container">
-        <span>© {year} KIMONO Art Nails. All rights reserved.</span>
-        <span className="footer__made">Handmade in small batches · Ships from the USA with tracking</span>
+        <span>{t('footer.rights', { year })}</span>
+        <span className="footer__made">{t('footer.made')}</span>
       </div>
     </footer>
   );

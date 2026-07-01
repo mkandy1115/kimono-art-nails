@@ -6,23 +6,11 @@ import { ArrowIcon } from '../components/icons.jsx';
 import { fetchProducts } from '../api/client.js';
 import { productByDisplayOrder } from '../lib/catalog.js';
 import useReveal from '../hooks/useReveal.js';
-
-const VALUES = [
-  {
-    title: 'Handmade in small batches',
-    text: 'Each set is painted and sealed by hand. We release only a few designs a month, so quality never gives way to quantity.',
-  },
-  {
-    title: 'Rooted in tradition',
-    text: 'Our motifs come from kimono textiles and the Japanese seasons — sakura, seigaiha waves, gold leaf, autumn maple.',
-  },
-  {
-    title: 'Made to be reused',
-    text: 'Press-on, not permanent. Apply in minutes, remove gently, and keep your set to wear again and again.',
-  },
-];
+import { useLocale } from '../i18n/LocaleContext.jsx';
 
 export default function About() {
+  const { t, messages } = useLocale();
+  const about = messages.about;
   const [showcase, setShowcase] = useState(null);
 
   useEffect(() => {
@@ -42,12 +30,9 @@ export default function About() {
     <>
       <section className="page-hero">
         <div className="container">
-          <span className="page-hero__eyebrow">About</span>
-          <h1 className="page-hero__title">Small hands, careful work</h1>
-          <p className="page-hero__sub">
-            KIMONO Art Nails is a tiny studio devoted to one thing: wearable nail art that carries
-            the quiet elegance of traditional Japan.
-          </p>
+          <span className="page-hero__eyebrow">{about.hero.eyebrow}</span>
+          <h1 className="page-hero__title">{about.hero.title}</h1>
+          <p className="page-hero__sub">{about.hero.sub}</p>
         </div>
       </section>
 
@@ -55,7 +40,10 @@ export default function About() {
         <div className="container split">
           <div className="split__art reveal">
             {showcase ? (
-              <Link to={`/shop/${showcase.slug}`} aria-label={`View ${showcase.name}`}>
+              <Link
+                to={`/shop/${showcase.slug}`}
+                aria-label={t('common.viewProduct', { name: showcase.name })}
+              >
                 <ProductVisual product={showcase} className="split__illustration" />
               </Link>
             ) : (
@@ -63,26 +51,19 @@ export default function About() {
             )}
           </div>
           <div className="split__copy reveal">
-            <span className="section-title__eyebrow">Our philosophy</span>
-            <h2 className="split__title">Elegance as a base, a touch of softness on top.</h2>
-            <p className="muted">
-              We start from refinement — warm ivories, gold leaf, and the clean lines of kimono
-              patterns. Then we add a gentle blush of pink to keep everything soft, feminine, and
-              approachable.
-            </p>
-            <p className="muted">
-              The result is nail art that feels special enough for a ceremony, yet wearable enough
-              for an ordinary, beautiful day.
-            </p>
+            <span className="section-title__eyebrow">{about.philosophy.eyebrow}</span>
+            <h2 className="split__title">{about.philosophy.title}</h2>
+            <p className="muted">{about.philosophy.paragraph1}</p>
+            <p className="muted">{about.philosophy.paragraph2}</p>
           </div>
         </div>
       </section>
 
       <section className="section section--base">
         <div className="container">
-          <SectionTitle eyebrow="What we believe" title="A few small promises" />
+          <SectionTitle eyebrow={about.values.eyebrow} title={about.values.title} />
           <div className="values">
-            {VALUES.map((v) => (
+            {about.values.items.map((v) => (
               <div key={v.title} className="value-card reveal">
                 <span className="value-card__mark" aria-hidden="true">
                   ✦
@@ -98,13 +79,11 @@ export default function About() {
       <section className="section">
         <div className="container">
           <div className="cta-band reveal">
-            <h2 className="cta-band__title">See what's in the studio now</h2>
-            <p className="cta-band__sub">
-              Our current designs are limited. Have a look while they're available.
-            </p>
+            <h2 className="cta-band__title">{about.cta.title}</h2>
+            <p className="cta-band__sub">{about.cta.sub}</p>
             <div className="center">
               <Link to="/shop" className="btn btn--primary">
-                Browse the shop <ArrowIcon className="btn__arrow" />
+                {about.cta.button} <ArrowIcon className="btn__arrow" />
               </Link>
             </div>
           </div>

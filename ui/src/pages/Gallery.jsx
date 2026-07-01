@@ -5,8 +5,11 @@ import { ArrowIcon } from '../components/icons.jsx';
 import { fetchProducts } from '../api/client.js';
 import { INSTAGRAM_URL } from '../lib/site.js';
 import useReveal from '../hooks/useReveal.js';
+import { useLocale } from '../i18n/LocaleContext.jsx';
 
 export default function Gallery() {
+  const { t, messages } = useLocale();
+  const gallery = messages.gallery;
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,12 +31,9 @@ export default function Gallery() {
     <>
       <section className="page-hero">
         <div className="container">
-          <span className="page-hero__eyebrow">Gallery</span>
-          <h1 className="page-hero__title">A look at our work</h1>
-          <p className="page-hero__sub">
-            Every design we've painted, gathered in one place. Tap any set to see the details or
-            request it.
-          </p>
+          <span className="page-hero__eyebrow">{gallery.hero.eyebrow}</span>
+          <h1 className="page-hero__title">{gallery.hero.title}</h1>
+          <p className="page-hero__sub">{gallery.hero.sub}</p>
         </div>
       </section>
 
@@ -57,7 +57,7 @@ export default function Gallery() {
                   <span className="masonry__overlay">
                     <span className="masonry__name">{p.name}</span>
                     <span className="masonry__view">
-                      View <ArrowIcon />
+                      {t('common.view')} <ArrowIcon />
                     </span>
                   </span>
                 </Link>
@@ -70,18 +70,17 @@ export default function Gallery() {
       <section className="section section--pink section--tight">
         <div className="container center">
           <h2 className="serif" style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)' }}>
-            Like something you see?
+            {gallery.cta.title}
           </h2>
           <p className="muted" style={{ maxWidth: '46ch', margin: '0.75rem auto 1.75rem' }}>
-            Browse availability in the shop, or DM us on Instagram for the fastest reply about a
-            custom version.
+            {gallery.cta.sub}
           </p>
           <div className="hero__cta center">
             <Link to="/shop" className="btn btn--primary">
-              Go to shop <ArrowIcon className="btn__arrow" />
+              {gallery.cta.shop} <ArrowIcon className="btn__arrow" />
             </Link>
             <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn btn--ghost">
-              Message on Instagram
+              {gallery.cta.instagram}
             </a>
           </div>
         </div>

@@ -51,10 +51,13 @@ export const categories = [
 export const products = [
   {
     slug: 'sakura',
-    name: 'sakura',
+    name: 'Sakura',
     tagline: 'Soft blush sakura with pearl and gold accents',
+    taglineJa: 'パールとゴールドが映える、やわらかな桜色',
     description:
       'A delicate blush-and-ivory set inspired by cherry blossoms in spring. Layered floral linework, subtle shimmer, tiny pearls, and touches of gold create a romantic design that feels soft, graceful, and easy to wear.',
+    descriptionJa:
+      '春の桜をイメージした、淡いブラッシュとアイボリーのセット。重ね描きの花模様、繊細なラメ、小さなパール、ゴールドのアクセントが、やわらかく優雅で着けやすいデザインに仕上がっています。',
     price: 30.0,
     currency: 'USD',
     categorySlug: 'classic-kimono',
@@ -77,10 +80,13 @@ export const products = [
 
   {
     slug: 'tsuru',
-    name: 'tsuru',
+    name: 'Tsuru',
     tagline: 'Ivory, brushed gold, and the elegance of the crane',
+    taglineJa: 'アイボリーとブラッシュゴールド、鶴の優雅さ',
     description:
       'An elegant ivory-and-gold set featuring a graceful crane, asanoha-inspired geometry, scattered gold foil, and brushed metallic finishes. The design combines traditional symbolism with a polished and luxurious modern look.',
+    descriptionJa:
+      '優雅な鶴と麻の葉模様、散りばめられたゴールド箔、ブラッシュメタリックが映える、アイボリーとゴールドのセット。伝統的なシンボルと、洗練されたモダンなラグジュアリー感を組み合わせました。',
     price: 40.0,
     currency: 'USD',
     categorySlug: 'classic-kimono',
@@ -103,10 +109,13 @@ export const products = [
 
   {
     slug: 'yogiku',
-    name: 'yogiku',
+    name: 'Yogiku',
     tagline: 'Midnight navy, silver light, and golden chrysanthemum',
+    taglineJa: 'ミッドナイトネイビーに、菊と銀の輝き',
     description:
       'A dramatic navy-and-ivory set accented with silver glitter, gold floral motifs, butterfly details, and delicate lattice patterns. Its bold contrast gives the design an elegant, formal, and evening-ready character.',
+    descriptionJa:
+      'ネイビーとアイボリーをベースに、シルバーグリッター、ゴールドの花模様、蝶のディテール、繊細な格子柄を添えたドラマティックなセット。力強いコントラストが、フォーマルでエレガントな夜の装いに。',
     price: 40.0,
     currency: 'USD',
     categorySlug: 'classic-kimono',
@@ -128,11 +137,14 @@ export const products = [
   },
 
   {
-    slug: 'katsushika-hokusai',
-    name: 'katsushika-hokusai',
+    slug: 'hokusai',
+    name: 'Hokusai',
     tagline: 'The Great Wave reimagined in jade, indigo, and gold',
+    taglineJa: '富嶽360度の波を、翡翠・藍・金で再解釈',
     description:
       'A painterly set inspired by Hokusai’s iconic wave and Mount Fuji. Deep indigo, muted jade, warm rose, ivory, and gold accents come together in a modern tribute to traditional Japanese ukiyo-e art.',
+    descriptionJa:
+      '葛飾北斎の「神奈川沖浪裏」と富士山にインスパイアされたペインティングセット。深い藍、落ち着いた翡翠、温かみのあるローズ、アイボリー、ゴールドが、浮世絵へのモダンなオマージュとして調和しています。',
     price: 40.0,
     currency: 'USD',
     categorySlug: 'classic-kimono',
@@ -158,10 +170,13 @@ export const products = [
 
   {
     slug: 'fujimusubi',
-    name: 'fujimusubi',
+    name: 'Fujimusubi',
     tagline: 'Wisteria violet tied with delicate gold musubi',
+    taglineJa: '藤の紫と、金の結び紐',
     description:
       'A graceful violet-and-ivory set inspired by wisteria blossoms and decorative Japanese knots. Silver shimmer, gold foil, pearl accents, and bow motifs give the design a refined and ceremonial feeling.',
+    descriptionJa:
+      '藤の花と日本の結び紋をモチーフにした、バイオレットとアイボリーのセット。シルバーの輝き、ゴールド箔、パール、リボンモチーフが、上品で式典にふさわしい印象を与えます。',
     price: 35.0,
     currency: 'USD',
     categorySlug: 'classic-kimono',
@@ -184,10 +199,13 @@ export const products = [
 
   {
     slug: 'tsubaki',
-    name: 'tsubaki',
+    name: 'Tsubaki',
     tagline: 'Camellia red and jade green in spring bloom',
+    taglineJa: '椿の紅と、新緑のコントラスト',
     description:
       'A lively camellia-inspired set in soft jade, warm red, and ivory. Hand-painted petals, butterfly charms, subtle shimmer, and gold accents create a fresh design with traditional Japanese floral character.',
+    descriptionJa:
+      '椿をイメージした、淡い翡翠、温かな赤、アイボリーのセット。手描きの花びら、蝶のチャーム、繊細なラメとゴールドが、和の花柄の清新さを表現しています。',
     price: 35.0,
     currency: 'USD',
     categorySlug: 'classic-kimono',
@@ -210,10 +228,13 @@ export const products = [
 
   {
     slug: 'shinku',
-    name: 'shinku',
+    name: 'Shinku',
     tagline: 'Deep crimson brocade illuminated with gold',
+    taglineJa: '深い深紅の錦に、金が灯る',
     description:
       'A rich crimson-and-ivory set inspired by formal kimono brocade. Layered floral patterns, brushed gold, scattered metallic foil, and an ornamental knot create a bold and celebratory finish.',
+    descriptionJa:
+      '正式な着物の錦をイメージした、深紅とアイボリーのセット。重ねた花模様、ブラッシュゴールド、散りばめた箔、装飾的な結び紋が、力強く祝福的な仕上がりに。',
     price: 35.0,
       currency: 'USD',
     categorySlug: 'classic-kimono',

@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { ArrowIcon } from '../components/icons.jsx';
 import { INSTAGRAM_URL, INSTAGRAM_HANDLE, CONTACT_EMAIL } from '../lib/site.js';
-import { PRICING_SECTIONS, ADDON_SECTION, SAMPLE_ORDER } from '../data/customPricing.js';
 import useReveal from '../hooks/useReveal.js';
+import { useLocale } from '../i18n/LocaleContext.jsx';
 
-function PriceRow({ label, price, formula, note, perUnit }) {
+function PriceRow({ label, price, formula, note, perUnit, formulaPrefix, perNailLabel }) {
   return (
     <div className="price-sheet__entry">
       <div className="price-sheet__row">
@@ -12,52 +12,62 @@ function PriceRow({ label, price, formula, note, perUnit }) {
         {price && (
           <span className="price-sheet__price">
             {price}
-            {perUnit && <span className="price-sheet__unit"> / nail</span>}
+            {perUnit && <span className="price-sheet__unit"> {perNailLabel}</span>}
           </span>
         )}
       </div>
-      {formula && <p className="price-sheet__formula">→ {formula}</p>}
+      {formula && <p className="price-sheet__formula">{formulaPrefix} {formula}</p>}
       {note && <p className="price-sheet__note">{note}</p>}
     </div>
   );
 }
 
 export default function CustomOrder() {
+  const { t, messages } = useLocale();
+  const co = messages.customOrder;
   useReveal([]);
 
   return (
     <>
       <section className="page-hero page-hero--compact">
         <div className="container">
-          <span className="page-hero__eyebrow">Custom Order</span>
-          <h1 className="page-hero__title">Price list</h1>
-          <p className="page-hero__sub">
-            Design details, pricing, and payment are confirmed with you before purchase.
-          </p>
+          <span className="page-hero__eyebrow">{co.hero.eyebrow}</span>
+          <h1 className="page-hero__title">{co.hero.title}</h1>
+          <p className="page-hero__sub">{co.hero.sub}</p>
         </div>
       </section>
 
       <section className="section section--tight">
         <div className="container container--narrow">
           <div className="price-sheet reveal">
-            {PRICING_SECTIONS.map((section) => (
+            {co.pricingSections.map((section) => (
               <div key={section.title} className="price-sheet__section">
                 <h2 className="price-sheet__heading">{section.title}</h2>
                 {section.items.map((item) => (
-                  <PriceRow key={item.label} {...item} />
+                  <PriceRow
+                    key={item.label}
+                    {...item}
+                    formulaPrefix={co.formulaPrefix}
+                    perNailLabel={co.perNail}
+                  />
                 ))}
               </div>
             ))}
 
             <div className="price-sheet__section">
-              <h2 className="price-sheet__heading">{ADDON_SECTION.title}</h2>
-              <p className="price-sheet__aside">{ADDON_SECTION.note}</p>
-              {ADDON_SECTION.perNail.map((item) => (
-                <PriceRow key={item.label} {...item} perUnit />
+              <h2 className="price-sheet__heading">{co.addonSection.title}</h2>
+              <p className="price-sheet__aside">{co.addonSection.note}</p>
+              {co.addonSection.perNail.map((item) => (
+                <PriceRow
+                  key={item.label}
+                  {...item}
+                  perUnit
+                  perNailLabel={co.perNail}
+                />
               ))}
-              <p className="price-sheet__sublabel">Additional charms / parts</p>
+              <p className="price-sheet__sublabel">{co.partsLabel}</p>
               <div className="price-sheet__sub">
-                {ADDON_SECTION.parts.map((item) => (
+                {co.addonSection.parts.map((item) => (
                   <PriceRow key={item.label} {...item} />
                 ))}
               </div>
@@ -65,33 +75,31 @@ export default function CustomOrder() {
           </div>
 
           <p className="price-sheet__contact muted reveal">
-            To order, contact us via Instagram DM ({INSTAGRAM_HANDLE}) or{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. We will discuss your design
-            and send purchase details before payment.
+            {t('customOrder.contact', { handle: INSTAGRAM_HANDLE, email: CONTACT_EMAIL })}
           </p>
 
           <figure className="custom-order-sample reveal">
             <img
               src="/4July-custom.jpg"
-              alt="Sample custom press-on nail set"
+              alt={co.sampleImageAlt}
               width="448"
               height="448"
               loading="lazy"
             />
             <figcaption className="custom-order-sample__title">
-              Sample custom order — {SAMPLE_ORDER.total}
+              {t('customOrder.sampleTitle', { total: co.sampleOrder.total })}
             </figcaption>
             <div className="custom-order-sample__breakdown">
-              {SAMPLE_ORDER.lines.map((line) => (
+              {co.sampleOrder.lines.map((line) => (
                 <PriceRow key={line.label} {...line} />
               ))}
-              <p className="price-sheet__sublabel">Additional art fees</p>
-              {SAMPLE_ORDER.addons.map((line) => (
+              <p className="price-sheet__sublabel">{co.sampleAddons}</p>
+              {co.sampleOrder.addons.map((line) => (
                 <PriceRow key={line.label} {...line} />
               ))}
               <div className="custom-order-sample__total">
-                <span>Total</span>
-                <span>{SAMPLE_ORDER.total}</span>
+                <span>{co.total}</span>
+                <span>{co.sampleOrder.total}</span>
               </div>
             </div>
           </figure>
@@ -101,16 +109,14 @@ export default function CustomOrder() {
       <section className="section section--tight">
         <div className="container">
           <div className="cta-band reveal">
-            <h2 className="cta-band__title">Ready to order?</h2>
-            <p className="cta-band__sub">
-              DM us on Instagram for the fastest reply, or send an inquiry.
-            </p>
+            <h2 className="cta-band__title">{co.cta.title}</h2>
+            <p className="cta-band__sub">{co.cta.sub}</p>
             <div className="hero__cta center">
               <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn btn--primary">
-                Message on Instagram <ArrowIcon className="btn__arrow" />
+                {co.cta.instagram} <ArrowIcon className="btn__arrow" />
               </a>
               <Link to="/contact" className="btn btn--ghost">
-                Send an inquiry
+                {co.cta.inquiry}
               </Link>
             </div>
           </div>

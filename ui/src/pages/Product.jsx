@@ -5,21 +5,19 @@ import ProductCard from '../components/ProductCard.jsx';
 import InquiryForm from '../components/InquiryForm.jsx';
 import { ArrowIcon } from '../components/icons.jsx';
 import { fetchProduct, fetchProducts } from '../api/client.js';
-import {
-  INSTAGRAM_URL,
-  INSTAGRAM_HANDLE,
-  ETSY_URL,
-  ETSY_SHOP_NAME,
-  IG_PREFERRED_NOTE,
-} from '../lib/site.js';
-import { formatPrice, STATUS_LABEL } from '../lib/format.js';
+import { INSTAGRAM_URL, ETSY_SHOP_NAME } from '../lib/site.js';
+import { formatPrice } from '../lib/format.js';
+import { localizedDescription, localizedTagline } from '../lib/productLocale.js';
 import useReveal from '../hooks/useReveal.js';
+import { useLocale } from '../i18n/LocaleContext.jsx';
 
 export default function Product() {
+  const { locale, t, messages } = useLocale();
+  const productCopy = messages.product;
   const { slug } = useParams();
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
-  const [status, setStatus] = useState('loading'); // loading | found | missing
+  const [status, setStatus] = useState('loading');
   const [showForm, setShowForm] = useState(false);
   const [activeImage, setActiveImage] = useState(null);
 
@@ -49,7 +47,7 @@ export default function Product() {
     };
   }, [slug]);
 
-  useReveal([status, product?.slug, related.length]);
+  useReveal([status, product?.slug, related.length, locale]);
 
   if (status === 'loading') {
     return (
@@ -73,13 +71,13 @@ export default function Product() {
       <section className="section center">
         <div className="container">
           <h1 className="serif" style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>
-            Design not found
+            {productCopy.notFound.title}
           </h1>
           <p className="muted" style={{ marginBottom: '1.5rem' }}>
-            This set may have sold out or been retired.
+            {productCopy.notFound.sub}
           </p>
           <Link to="/shop" className="btn btn--primary">
-            Back to shop <ArrowIcon className="btn__arrow" />
+            {t('common.backToShop')} <ArrowIcon className="btn__arrow" />
           </Link>
         </div>
       </section>
@@ -87,6 +85,7 @@ export default function Product() {
   }
 
   const isOrderable = product.status === 'available' || product.status === 'made_to_order';
+  const statusLabel = messages.status[product.status] || product.status;
   const mainImage = activeImage ?? product.image;
   const gallery = product.gallery ?? [];
   const thumbImages =
@@ -102,20 +101,17 @@ export default function Product() {
     }
   };
 
-  const specs = [
-    ['Shape', product.shape],
-    ['Length', product.length],
-    ['Pieces', product.pieces ? `${product.pieces} chips` : null],
-    ['Collection', product.category?.name],
-    ['Materials', product.materials],
-  ].filter(([, v]) => v);
+  const hintVars = {
+    igPreferredNote: t('common.igPreferredNote'),
+    etsyShop: ETSY_SHOP_NAME,
+  };
 
   return (
     <>
       <section className="section section--tight">
         <div className="container">
-          <nav className="crumbs" aria-label="Breadcrumb">
-            <Link to="/shop">Shop</Link>
+          <nav className="crumbs" aria-label={productCopy.breadcrumbAria}>
+            <Link to="/shop">{productCopy.breadcrumbShop}</Link>
             <span aria-hidden="true">/</span>
             <span>{product.name}</span>
           </nav>
@@ -140,7 +136,7 @@ export default function Product() {
                       key={src}
                       type="button"
                       className="product__thumb"
-                      aria-label={`View ${product.name} photo`}
+                      aria-label={t('product.viewPhoto', { name: product.name })}
                       onClick={() => handleThumbClick(src)}
                     >
                       <img src={src} alt="" loading="lazy" />
@@ -151,25 +147,14 @@ export default function Product() {
             </div>
 
             <div className="product__info reveal">
-              <span className={`badge badge--${product.status}`}>
-                {STATUS_LABEL[product.status] || product.status}
-              </span>
+              <span className={`badge badge--${product.status}`}>{statusLabel}</span>
               {product.category?.name && (
                 <span className="product__cat">{product.category.name}</span>
               )}
               <h1 className="product__title">{product.name}</h1>
-              <p className="product__tagline">{product.tagline}</p>
+              <p className="product__tagline">{localizedTagline(product, locale)}</p>
               <p className="product__price">{formatPrice(product.price, product.currency)}</p>
-              <p className="product__desc">{product.description}</p>
-
-              {/* <dl className="specs">
-                {specs.map(([k, v]) => (
-                  <div key={k} className="specs__row">
-                    <dt>{k}</dt>
-                    <dd>{v}</dd>
-                  </div>
-                ))}
-              </dl> */}
+              <p className="product__desc">{localizedDescription(product, locale)}</p>
 
               {isOrderable ? (
                 <>
@@ -178,25 +163,18 @@ export default function Product() {
                     className="btn btn--primary btn--block"
                     onClick={() => setShowForm((v) => !v)}
                   >
-                    {product.status === 'made_to_order' ? 'Request this set' : 'Inquire to order'}
+                    {product.status === 'made_to_order'
+                      ? productCopy.request
+                      : productCopy.inquire}
                     <ArrowIcon className="btn__arrow" />
                   </button>
-                  <p className="product__hint muted">
-                    To order this set, DM us on Instagram ({INSTAGRAM_HANDLE}) — that is our
-                    preferred channel and the fastest way to get a reply. {IG_PREFERRED_NOTE} You
-                    can also use the inquiry form below, or browse ready-to-ship sets on{' '}
-                    <a href={ETSY_URL} target="_blank" rel="noreferrer">
-                      {ETSY_SHOP_NAME} on Etsy
-                    </a>
-                    . We will discuss design details, pricing, and payment (Venmo) before
-                    production begins.
-                  </p>
+                  <p className="product__hint muted">{t('product.hint', hintVars)}</p>
                 </>
               ) : (
                 <div className="product__soldout">
                   {product.status === 'coming_soon'
-                    ? `This design is coming soon. DM us on Instagram (${INSTAGRAM_HANDLE}) to be notified when it launches.`
-                    : `This design is currently sold out. DM us on Instagram (${INSTAGRAM_HANDLE}) about a restock or custom set.`}
+                    ? t('product.comingSoon')
+                    : t('product.soldOut')}
                   <a
                     href={INSTAGRAM_URL}
                     target="_blank"
@@ -204,7 +182,7 @@ export default function Product() {
                     className="btn btn--ghost"
                     style={{ marginTop: '1rem' }}
                   >
-                    Message on Instagram
+                    {t('common.messageInstagram')}
                   </a>
                 </div>
               )}
@@ -213,7 +191,7 @@ export default function Product() {
                 <div className="product__form">
                   <InquiryForm
                     productSlug={product.slug}
-                    defaultSubject={`Order inquiry: ${product.name}`}
+                    defaultSubject={t('inquiry.defaultOrderSubject', { name: product.name })}
                   />
                 </div>
               )}
@@ -226,7 +204,7 @@ export default function Product() {
         <section className="section section--base">
           <div className="container">
             <h2 className="serif center" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', marginBottom: '2rem' }}>
-              You may also like
+              {productCopy.related}
             </h2>
             <div className="grid grid--cards">
               {related.map((p) => (
