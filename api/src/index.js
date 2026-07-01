@@ -65,7 +65,7 @@ app.get('/api/health', (c) =>
     service: 'kimono-art-nails-api',
     mode: c.get('db') ? 'postgres' : 'in-memory',
     images: Boolean(c.env.PRODUCT_IMAGE),
-    email: Boolean(c.env.EMAIL),
+    notifications: Boolean(c.env.WEB3FORMS_ACCESS_KEY?.trim()),
     time: new Date().toISOString(),
   })
 );
@@ -133,19 +133,20 @@ app.post('/api/inquiries', async (c) => {
     message: trimmedMessage,
   });
 
+  let mail = { sent: false };
   try {
-    const mail = await sendInquiryEmail(c.env, {
+    mail = await sendInquiryEmail(c.env, {
       name: trimmedName,
       email: trimmedEmail,
       productSlug: trimmedSlug,
       subject: trimmedSubject,
       message: trimmedMessage,
     });
-    if (c.env.EMAIL && !mail.sent) {
-      console.warn('[inquiry] EMAIL binding present but CONTACT_INBOX is not set — skipped send.');
+    if (!mail.sent) {
+      console.warn('[inquiry] WEB3FORMS_ACCESS_KEY not set — saved to DB only.');
     }
   } catch (err) {
-    console.error('[inquiry email]', err);
+    console.error('[inquiry web3forms]', err);
     return c.json({ error: 'Your message could not be sent.' }, 500);
   }
 
@@ -154,7 +155,7 @@ app.post('/api/inquiries', async (c) => {
       data: {
         id: inquiry.id ?? null,
         persisted: inquiry.persisted !== false,
-        emailed: Boolean(c.env.EMAIL && c.env.CONTACT_INBOX?.trim()),
+        emailed: Boolean(c.env.WEB3FORMS_ACCESS_KEY?.trim() && mail.sent),
       },
       message: 'Thank you — your inquiry has been received. We will reply by email soon.',
     },

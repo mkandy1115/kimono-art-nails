@@ -1,16 +1,11 @@
 // ----------------------------------------------------------------------------
-// Sends inquiry notifications via the Cloudflare Email Service Worker binding.
+// Sends inquiry notifications via Web3Forms (https://web3forms.com).
 //
-// Prerequisites (Cloudflare dashboard):
-//   1. Email Routing → verify destination inbox (CONTACT_INBOX).
-//   2. Email Sending → onboard your shop domain for CONTACT_FROM.
-//   3. wrangler.jsonc → send_email binding with matching destination_address.
-//
-// Use CONTACT_FROM as `from` (your authenticated domain). Put the customer's
-// address in replyTo so you can hit Reply in your inbox.
+// Set WEB3FORMS_ACCESS_KEY as a Worker secret (api/.dev.vars locally).
+// Notification inbox is configured in the Web3Forms dashboard, not here.
 // ----------------------------------------------------------------------------
 
-const DEFAULT_FROM = 'hello@kimonoartnails.com';
+const WEB3FORMS_URL = 'https://api.web3forms.com/submit';
 
 export function buildInquiryEmail({ name, email, productSlug, subject, message }) {
   const safeName = name.replace(/[\r\n]/g, ' ');
@@ -27,23 +22,31 @@ export function buildInquiryEmail({ name, email, productSlug, subject, message }
 }
 
 export async function sendInquiryEmail(env, inquiry) {
-  const emailBinding = env.EMAIL;
-  const inbox = env.CONTACT_INBOX?.trim();
-  const from = env.CONTACT_FROM?.trim() || DEFAULT_FROM;
-
-  if (!emailBinding || !inbox) {
-    return { sent: false, reason: 'email-not-configured' };
+  const accessKey = env.WEB3FORMS_ACCESS_KEY?.trim();
+  if (!accessKey) {
+    return { sent: false, reason: 'web3forms-not-configured' };
   }
 
-  const { safeName, subjectLine, text } = buildInquiryEmail(inquiry);
+  const { subjectLine, text } = buildInquiryEmail(inquiry);
 
-  await emailBinding.send({
-    from,
-    to: inbox,
-    replyTo: inquiry.email,
-    subject: subjectLine,
-    text,
+  const res = await fetch(WEB3FORMS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      access_key: accessKey,
+      name: inquiry.name,
+      email: inquiry.email,
+      replyto: inquiry.email,
+      subject: subjectLine,
+      message: text,
+    }),
   });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.success) {
+    const detail = data.message || `Web3Forms responded with status ${res.status}`;
+    throw new Error(detail);
+  }
 
   return { sent: true };
 }
