@@ -8,7 +8,6 @@ import {
   ETSY_URL,
   ETSY_SHOP_NAME,
   CONTACT_EMAIL,
-  IG_PREFERRED_NOTE,
 } from '../lib/site.js';
 import useReveal from '../hooks/useReveal.js';
 
@@ -19,11 +18,11 @@ const GROUPS = [
     items: [
       {
         q: 'How do I place an order?',
-        a: `For custom or made-to-order sets, contact us on Instagram DM (${INSTAGRAM_HANDLE}) — that is our preferred channel and the fastest way to get a reply. You can also email ${CONTACT_EMAIL} or use the inquiry form on our Contact page. We will discuss the design, pricing, and order details before purchase. ${IG_PREFERRED_NOTE}`,
+        a: `For custom or made-to-order sets, contact us on Instagram DM (${INSTAGRAM_HANDLE}) — our preferred channel and the fastest way to get a reply. You can also email ${CONTACT_EMAIL} or use the inquiry form on our Contact page. We will discuss the design, pricing, and order details with you before purchase, then send payment details when you are ready to proceed.`,
       },
       {
         q: 'Can I buy ready-to-ship sets without a custom order?',
-        a: `Yes. Ready-to-ship nail sets are available on our Etsy shop (${ETSY_SHOP_NAME}). Browse available designs at ${ETSY_URL.replace('https://', '')} and purchase directly there.`,
+        a: `Yes. Ready-to-ship nail sets are listed on our Etsy shop (${ETSY_SHOP_NAME}) at ${ETSY_URL.replace('https://', '')}. You can browse available designs and purchase directly there — no custom consultation needed for those listings.`,
       },
     ],
   },
@@ -33,15 +32,15 @@ const GROUPS = [
     items: [
       {
         q: 'How do I measure my nail size?',
-        a: '① Measuring tape: Place a soft tape measure across the widest part of each nail (near the base) and read the width in millimeters. ② Tape and ruler: Put clear tape over the nail, mark both edges, remove the tape, and measure the distance between the marks with a ruler — that length in mm is your nail width.',
+        a: '① Soft measuring tape: Place the tape lightly across the widest part of each nail (near the base) and read the width in millimeters. ② Tape and ruler: Along the curve of the nail, apply clear tape, mark both side edges, remove the tape, and measure the distance between the marks in mm — that is the nail width for that finger. Repeat for each nail.',
       },
       {
         q: 'Any tips for choosing a size?',
-        a: 'Measure along the curve of your nail, not in a straight line across flat space. If you are between sizes or unsure, choose a slightly larger size — you can file the nails down for a natural fit.',
+        a: 'Always measure along the curve of the nail, not in a straight line across flat space. If you are between sizes or unsure, choose a slightly larger size — you can file the nails down to fine-tune the fit.',
       },
       {
         q: 'Can I order a custom fit?',
-        a: 'Yes. Made-to-order and custom sets are created to your measurements. Our basic custom fee covers 10 nails sized to your nails. Share your measurements via Instagram DM or email when you order.',
+        a: 'Yes. Made-to-order and custom sets are created to your measurements. The $10 basic custom fee covers 10 nails sized to your nails. Share your measurements via Instagram DM or email when you place your order.',
       },
     ],
   },
@@ -69,7 +68,7 @@ const GROUPS = [
     items: [
       {
         q: 'How do I pay for custom press-on nails?',
-        a: 'The final price is confirmed after we discuss the design and any additional options. Once the total is agreed, payment is made through Venmo. Production begins after payment is confirmed.',
+        a: 'The final price is determined after we discuss the design and any additional options. Once the total is confirmed, we will send payment details and payment is made through Venmo. Production begins after payment has been confirmed.',
       },
     ],
   },
@@ -83,11 +82,11 @@ const GROUPS = [
       },
       {
         q: 'How much do existing design orders cost?',
-        a: 'Size customization for a design already in our collection: design price + $10 basic fee. Color change for an existing design: design price + $10 basic fee + $20.',
+        a: 'Size customization for a design already in our collection: listed design price + $10 basic fee. Color change for an existing design: listed design price + $10 basic fee + $20.',
       },
       {
         q: 'What about simple one-color designs?',
-        a: 'One color: $10. Magnet one color: $20.',
+        a: 'Simple design orders (standalone, not based on an existing catalog design): one color $10; magnet one-color $20.',
       },
       {
         q: 'What is a full custom design order?',
@@ -95,7 +94,7 @@ const GROUPS = [
       },
       {
         q: 'What additional art fees apply?',
-        a: 'Additional art fees apply to full custom design orders only: Japanese pattern art +$4 per nail, mirror art +$3 per nail, hand-painted design +$2 and up per nail, magnet +$1 per nail. Additional charms/parts: large +$2, medium +$1.50, small +$1.',
+        a: 'These apply to full custom design orders only. Japanese pattern (wagara) art: +$4 per nail. Mirror art: +$3 per nail. Hand-painted detail: +$2 and up per nail. Magnet accent: +$1 per nail. Additional charms or parts: large +$2, medium +$1.50, small +$1.',
       },
     ],
   },
@@ -105,11 +104,11 @@ const GROUPS = [
     items: [
       {
         q: 'When can an order be canceled?',
-        a: 'Orders may be canceled if we do not receive a reply within 72 hours during the order discussion, or if payment is not confirmed within 72 hours after we send the purchase page — unless you have told us your expected payment date in advance. Cancellations due to customer preference after purchase are generally not accepted.',
+        a: 'An order may be treated as canceled if we do not receive a reply within 72 hours during the order discussion, or if payment is not confirmed within 72 hours after we send the purchase page — unless you have already told us your expected payment date, in which case we will accommodate that. Cancellations due to customer preference after purchase are generally not accepted.',
       },
       {
         q: 'Do you accept returns or exchanges?',
-        a: 'We do not accept returns or exchanges when the design does not match your expectations, when the wrong size was selected by the customer, or for change-of-mind cancellations. If there is a mistake on our part — such as incorrect sizing or a defect — please contact us within one week of delivery and we will resolve it sincerely.',
+        a: 'We do not accept returns or exchanges when the design does not match your image or expectations, when the incorrect size was selected by the customer, or for change-of-mind cancellations. If there is a mistake on our part — such as incorrect sizing or a defect — please contact us within one week of delivery and we will sincerely work to resolve it.',
       },
     ],
   },
