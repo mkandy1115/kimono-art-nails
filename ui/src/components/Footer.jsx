@@ -16,7 +16,7 @@ export default function Footer() {
         <div className="footer__brand">
           <img
             className="footer__logo-img"
-            src="/logo-white.png"
+            src="/logo-grey.png"
             alt="KIMONO Art Nails"
             width="180"
             height="48"
