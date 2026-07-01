@@ -521,52 +521,77 @@
 .accordion__panel p { padding: 0 1.4rem 1.3rem; margin: 0; }
 
 /* ---------------------------- Custom Order ------------------------------- */
-.pricing-intro { max-width: 42ch; margin: 0 auto 1.5rem; font-size: 0.95rem; }
-.pricing-table-wrap {
-  overflow-x: auto;
+.page-hero--compact .page-hero__title { font-size: clamp(1.75rem, 3.5vw, 2.35rem); }
+.page-hero--compact .page-hero__sub { max-width: 36ch; }
+
+.price-sheet {
+  max-width: 28rem;
+  margin-inline: auto;
+  padding: 1.25rem 1.4rem;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface);
   box-shadow: var(--shadow-soft);
+  font-size: 0.94rem;
+  line-height: 1.45;
 }
-.pricing-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.92rem;
-  text-align: left;
+.price-sheet__section {
+  padding-block: 0.85rem;
+  border-bottom: 1px solid var(--line);
 }
-.pricing-table caption {
-  padding: 1rem 1.2rem 0;
+.price-sheet__section:first-child { padding-top: 0; }
+.price-sheet__section:last-child { padding-bottom: 0; border-bottom: none; }
+.price-sheet__heading {
   font-family: var(--font-sans);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
+  font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-soft);
-  text-align: left;
+  margin: 0 0 0.45rem;
 }
-.pricing-table th,
-.pricing-table td {
-  padding: 0.85rem 1.2rem;
-  border-bottom: 1px solid var(--line);
-  vertical-align: top;
+.price-sheet__aside {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  color: var(--text-faint);
 }
-.pricing-table thead th {
-  background: var(--base-2);
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+.price-sheet__sublabel {
+  margin: 0.55rem 0 0.2rem;
+  font-size: 0.88rem;
   color: var(--text);
-  font-weight: 600;
 }
-.pricing-table tbody tr:last-child td,
-.pricing-table tbody tr:last-child th { border-bottom: none; }
-.pricing-table td:first-child { color: var(--text); font-weight: 500; }
-.pricing-table td:nth-child(2) {
+.price-sheet__sub { padding-left: 0.75rem; }
+.price-sheet__entry + .price-sheet__entry { margin-top: 0.35rem; }
+.price-sheet__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.price-sheet__label { color: var(--text); flex: 1; min-width: 0; }
+.price-sheet__price {
   font-family: var(--font-display);
   font-size: 1.05rem;
   color: var(--text);
   white-space: nowrap;
+  flex-shrink: 0;
 }
-.pricing-table td:nth-child(3) { color: var(--text-soft); font-size: 0.88rem; }
-.pricing-table tbody tr:hover { background: var(--off-white); }
+.price-sheet__unit {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-soft);
+}
+.price-sheet__formula,
+.price-sheet__note {
+  margin: 0.12rem 0 0;
+  padding-left: 0.75rem;
+  font-size: 0.86rem;
+  color: var(--text-soft);
+}
+.price-sheet__contact {
+  max-width: 28rem;
+  margin: 1.25rem auto 0;
+  font-size: 0.88rem;
+  text-align: center;
+  line-height: 1.55;
+}

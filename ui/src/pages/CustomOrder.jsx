@@ -1,39 +1,23 @@
 import { Link } from 'react-router-dom';
-import SectionTitle from '../components/SectionTitle.jsx';
 import { ArrowIcon } from '../components/icons.jsx';
-import { INSTAGRAM_URL, INSTAGRAM_HANDLE } from '../lib/site.js';
-import {
-  BASIC_FEE,
-  ORDER_TYPES,
-  ADDON_ART,
-  ADDON_PARTS,
-} from '../data/customPricing.js';
+import { INSTAGRAM_URL, INSTAGRAM_HANDLE, CONTACT_EMAIL } from '../lib/site.js';
+import { PRICING_SECTIONS, ADDON_SECTION } from '../data/customPricing.js';
 import useReveal from '../hooks/useReveal.js';
 
-function PricingTable({ caption, headers, rows }) {
+function PriceRow({ label, price, formula, note, perUnit }) {
   return (
-    <div className="pricing-table-wrap">
-      <table className="pricing-table">
-        {caption && <caption>{caption}</caption>}
-        <thead>
-          <tr>
-            {headers.map((h) => (
-              <th key={h} scope="col">
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.key}>
-              {row.cells.map((cell, i) => (
-                <td key={i}>{cell}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="price-sheet__entry">
+      <div className="price-sheet__row">
+        <span className="price-sheet__label">{label}</span>
+        {price && (
+          <span className="price-sheet__price">
+            {price}
+            {perUnit && <span className="price-sheet__unit"> / nail</span>}
+          </span>
+        )}
+      </div>
+      {formula && <p className="price-sheet__formula">→ {formula}</p>}
+      {note && <p className="price-sheet__note">{note}</p>}
     </div>
   );
 }
@@ -43,98 +27,57 @@ export default function CustomOrder() {
 
   return (
     <>
-      <section className="page-hero">
+      <section className="page-hero page-hero--compact">
         <div className="container">
           <span className="page-hero__eyebrow">Custom Order</span>
-          <h1 className="page-hero__title">Pricing & options</h1>
+          <h1 className="page-hero__title">Price list</h1>
           <p className="page-hero__sub">
-            Compare custom order types and optional add-ons. Final totals are confirmed with you
-            before payment. DM us on Instagram ({INSTAGRAM_HANDLE}) for the fastest reply.
+            Design details, pricing, and payment are confirmed with you before purchase.
           </p>
         </div>
       </section>
 
       <section className="section section--tight">
         <div className="container container--narrow">
-          <SectionTitle title="Basic fee" align="center" />
-          <div className="reveal">
-            <PricingTable
-              headers={['Fee', 'Price', 'Includes']}
-              rows={[
-                {
-                  key: 'basic',
-                  cells: [BASIC_FEE.label, BASIC_FEE.price, BASIC_FEE.note],
-                },
-              ]}
-            />
-          </div>
-        </div>
-      </section>
+          <div className="price-sheet reveal">
+            {PRICING_SECTIONS.map((section) => (
+              <div key={section.title} className="price-sheet__section">
+                <h2 className="price-sheet__heading">{section.title}</h2>
+                {section.items.map((item) => (
+                  <PriceRow key={item.label} {...item} />
+                ))}
+              </div>
+            ))}
 
-      <section className="section section--tight section--base">
-        <div className="container container--narrow">
-          <SectionTitle title="Order types" align="center" />
-          <p className="center muted pricing-intro reveal">
-            Choose the path that fits your request. Existing designs use prices listed in the shop.
-          </p>
-          <div className="reveal">
-            <PricingTable
-              caption="Compare custom order types"
-              headers={['Order type', 'Price', 'Notes']}
-              rows={ORDER_TYPES.map((row) => ({
-                key: row.type,
-                cells: [row.type, row.formula, row.example],
-              }))}
-            />
+            <div className="price-sheet__section">
+              <h2 className="price-sheet__heading">{ADDON_SECTION.title}</h2>
+              <p className="price-sheet__aside">{ADDON_SECTION.note}</p>
+              {ADDON_SECTION.perNail.map((item) => (
+                <PriceRow key={item.label} {...item} perUnit />
+              ))}
+              <p className="price-sheet__sublabel">Additional charms / parts</p>
+              <div className="price-sheet__sub">
+                {ADDON_SECTION.parts.map((item) => (
+                  <PriceRow key={item.label} {...item} />
+                ))}
+              </div>
+            </div>
           </div>
+
+          <p className="price-sheet__contact muted reveal">
+            To order, contact us via Instagram DM ({INSTAGRAM_HANDLE}) or{' '}
+            <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. We will discuss your design
+            and send purchase details before payment.
+          </p>
         </div>
       </section>
 
       <section className="section section--tight">
-        <div className="container container--narrow">
-          <SectionTitle title="Add-on art" align="center" />
-          <p className="center muted pricing-intro reveal">
-            These fees apply to <strong>full custom design orders only</strong>.
-          </p>
-          <div className="reveal">
-            <PricingTable
-              caption="Optional art upgrades per nail"
-              headers={['Add-on', 'Price']}
-              rows={ADDON_ART.map((row) => ({
-                key: row.item,
-                cells: [row.item, row.price],
-              }))}
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className="section section--tight section--base">
-        <div className="container container--narrow">
-          <SectionTitle title="Charms & parts" align="center" />
-          <p className="center muted pricing-intro reveal">
-            Additional charms and parts for full custom design orders.
-          </p>
-          <div className="reveal">
-            <PricingTable
-              caption="Optional charms and parts"
-              headers={['Size', 'Price']}
-              rows={ADDON_PARTS.map((row) => ({
-                key: row.item,
-                cells: [row.item, row.price],
-              }))}
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
         <div className="container">
           <div className="cta-band reveal">
-            <h2 className="cta-band__title">Ready to order a custom set?</h2>
+            <h2 className="cta-band__title">Ready to order?</h2>
             <p className="cta-band__sub">
-              DM us on Instagram for the fastest reply, or send an inquiry and we will get back to
-              you.
+              DM us on Instagram for the fastest reply, or send an inquiry.
             </p>
             <div className="hero__cta center">
               <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn btn--primary">
