@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductVisual from '../components/ProductVisual.jsx';
 import { ArrowIcon } from '../components/icons.jsx';
+import ExternalLink from '../components/ExternalLink.jsx';
 import { fetchProducts } from '../api/client.js';
 import { INSTAGRAM_URL } from '../lib/site.js';
 import useReveal from '../hooks/useReveal.js';
@@ -79,9 +80,9 @@ export default function Gallery() {
             <Link to="/shop" className="btn btn--primary">
               {gallery.cta.shop} <ArrowIcon className="btn__arrow" />
             </Link>
-            <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn btn--ghost">
+            <ExternalLink href={INSTAGRAM_URL} className="btn btn--ghost">
               {gallery.cta.instagram}
-            </a>
+            </ExternalLink>
           </div>
         </div>
       </section>

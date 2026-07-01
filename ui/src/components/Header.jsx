@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import Logo from './Logo.jsx';
+import ExternalLink from './ExternalLink.jsx';
 import { InstagramIcon, EtsyIcon, MenuIcon, CloseIcon } from './icons.jsx';
 import { INSTAGRAM_URL, ETSY_URL } from '../lib/site.js';
 import { useLocale } from '../i18n/LocaleContext.jsx';
+import useFocusTrap from '../hooks/useFocusTrap.js';
 
 const NAV = [
   { to: '/', labelKey: 'nav.home', end: true },
@@ -20,6 +22,15 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const burgerRef = useRef(null);
+  const trapRef = useRef(null);
+
+  useFocusTrap({
+    containerRef: trapRef,
+    active: open,
+    onEscape: () => setOpen(false),
+    returnFocusRef: burgerRef,
+  });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -36,6 +47,22 @@ export default function Header() {
     document.body.style.overflow = open ? 'hidden' : '';
     return () => {
       document.body.style.overflow = '';
+    };
+  }, [open]);
+
+  useEffect(() => {
+    const main = document.getElementById('main');
+    const footer = document.getElementById('site-footer');
+    if (open) {
+      main?.setAttribute('aria-hidden', 'true');
+      footer?.setAttribute('aria-hidden', 'true');
+    } else {
+      main?.removeAttribute('aria-hidden');
+      footer?.removeAttribute('aria-hidden');
+    }
+    return () => {
+      main?.removeAttribute('aria-hidden');
+      footer?.removeAttribute('aria-hidden');
     };
   }, [open]);
 
@@ -66,29 +93,27 @@ export default function Header() {
           >
             {locale === 'en' ? t('lang.toggleToJa') : t('lang.toggleToEn')}
           </button>
-          <a
+          <ExternalLink
             href={INSTAGRAM_URL}
-            target="_blank"
-            rel="noreferrer"
             className="header__icon"
-            aria-label={t('nav.instagram')}
+            ariaLabel={t('nav.instagram')}
           >
             <InstagramIcon />
-          </a>
-          <a
+          </ExternalLink>
+          <ExternalLink
             href={ETSY_URL}
-            target="_blank"
-            rel="noreferrer"
             className="header__icon"
-            aria-label={t('nav.etsy')}
+            ariaLabel={t('nav.etsy')}
           >
             <EtsyIcon />
-          </a>
+          </ExternalLink>
           <button
+            ref={burgerRef}
             type="button"
             className="header__burger"
             aria-label={open ? t('nav.closeMenu') : t('nav.openMenu')}
             aria-expanded={open}
+            aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <CloseIcon /> : <MenuIcon />}
@@ -96,35 +121,41 @@ export default function Header() {
         </div>
       </div>
 
-      <div className={`drawer${open ? ' drawer--open' : ''}`} aria-hidden={!open}>
-        <nav className="drawer__nav" aria-label={t('nav.ariaMobile')}>
-          {NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) => `drawer__link${isActive ? ' is-active' : ''}`}
-            >
-              {t(item.labelKey)}
-            </NavLink>
-          ))}
-        </nav>
-        <div className="drawer__foot">
-          <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="drawer__social">
-            <InstagramIcon /> {t('nav.instagram')}
-          </a>
-          <a href={ETSY_URL} target="_blank" rel="noreferrer" className="drawer__social">
-            <EtsyIcon /> {t('nav.etsy')}
-          </a>
+      <div ref={trapRef} aria-hidden={!open}>
+        <div
+          id="mobile-nav"
+          className={`drawer${open ? ' drawer--open' : ''}`}
+          aria-hidden={!open}
+        >
+          <nav className="drawer__nav" aria-label={t('nav.ariaMobile')}>
+            {NAV.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                className={({ isActive }) => `drawer__link${isActive ? ' is-active' : ''}`}
+              >
+                {t(item.labelKey)}
+              </NavLink>
+            ))}
+          </nav>
+          <div className="drawer__foot">
+            <ExternalLink href={INSTAGRAM_URL} className="drawer__social">
+              <InstagramIcon /> {t('nav.instagram')}
+            </ExternalLink>
+            <ExternalLink href={ETSY_URL} className="drawer__social">
+              <EtsyIcon /> {t('nav.etsy')}
+            </ExternalLink>
+          </div>
         </div>
+        <button
+          type="button"
+          className={`drawer__scrim${open ? ' drawer__scrim--open' : ''}`}
+          aria-label={t('nav.closeMenu')}
+          tabIndex={open ? 0 : -1}
+          onClick={() => setOpen(false)}
+        />
       </div>
-      <button
-        type="button"
-        className={`drawer__scrim${open ? ' drawer__scrim--open' : ''}`}
-        aria-label={t('nav.closeMenu')}
-        tabIndex={open ? 0 : -1}
-        onClick={() => setOpen(false)}
-      />
     </header>
   );
 }

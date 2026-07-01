@@ -11,6 +11,10 @@ export default {
     toggleLabel: 'Switch language',
   },
 
+  a11y: {
+    localeChanged: 'Language changed to English',
+  },
+
   nav: {
     home: 'Home',
     about: 'About',
@@ -50,6 +54,11 @@ export default {
     all: 'All',
     filterByCollection: 'Filter by collection',
     logoAlt: 'KIMONO Art Nails',
+    logoHome: 'KIMONO Art Nails — home',
+    skipToContent: 'Skip to content',
+    opensInNewTab: '(opens in new tab)',
+    productIllustration: '{{name}} — illustrated preview',
+    productIllustrationFallback: 'Illustrated nail chip preview',
     viewProduct: 'View {{name}}',
   },
 
@@ -279,6 +288,17 @@ export default {
     sendAnother: 'Send another',
     errorDefault: 'Something went wrong. Please try again.',
     defaultOrderSubject: 'Order inquiry: {{name}}',
+    errors: {
+      nameRequired: 'A name is required.',
+      nameTooLong: 'Name is too long.',
+      emailInvalid: 'A valid email is required.',
+      messageRequired: 'A message is required.',
+      messageTooLong: 'The message is too long.',
+      saveFailed: 'Could not save your inquiry. Please try again.',
+      invalidRequest: 'Invalid request. Please try again.',
+      validationFailed: 'Please check the form and try again.',
+      generic: 'Something went wrong.',
+    },
   },
 
   faq: {

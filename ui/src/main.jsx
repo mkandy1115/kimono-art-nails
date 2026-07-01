@@ -8,6 +8,8 @@ import './styles/global.css';
 import './styles/components.css';
 import './styles/pages.css';
 
+document.documentElement.classList.add('js');
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <LocaleProvider>

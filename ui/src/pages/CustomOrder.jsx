@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowIcon } from '../components/icons.jsx';
+import ExternalLink from '../components/ExternalLink.jsx';
 import { INSTAGRAM_URL, INSTAGRAM_HANDLE, CONTACT_EMAIL } from '../lib/site.js';
 import useReveal from '../hooks/useReveal.js';
 import { useLocale } from '../i18n/LocaleContext.jsx';
@@ -112,9 +113,9 @@ export default function CustomOrder() {
             <h2 className="cta-band__title">{co.cta.title}</h2>
             <p className="cta-band__sub">{co.cta.sub}</p>
             <div className="hero__cta center">
-              <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn btn--primary">
+              <ExternalLink href={INSTAGRAM_URL} className="btn btn--primary">
                 {co.cta.instagram} <ArrowIcon className="btn__arrow" />
-              </a>
+              </ExternalLink>
               <Link to="/contact" className="btn btn--ghost">
                 {co.cta.inquiry}
               </Link>

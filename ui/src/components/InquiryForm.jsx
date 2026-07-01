@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { submitInquiry } from '../api/client.js';
+import { translateInquiryError } from '../lib/inquiryErrors.js';
 import { ArrowIcon } from './icons.jsx';
 import { useLocale } from '../i18n/LocaleContext.jsx';
 
@@ -30,7 +31,7 @@ export default function InquiryForm({ productSlug = null, defaultSubject = '' })
       setState('success');
       setForm({ name: '', email: '', subject: defaultSubject, message: '' });
     } catch (err) {
-      setError(err.message || t('inquiry.errorDefault'));
+      setError(translateInquiryError(err.message, t));
       setState('error');
     }
   };

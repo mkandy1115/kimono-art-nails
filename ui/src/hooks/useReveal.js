@@ -7,6 +7,11 @@ export default function useReveal(deps = []) {
     const els = Array.from(document.querySelectorAll('.reveal:not(.is-visible)'));
     if (!els.length) return undefined;
 
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      els.forEach((el) => el.classList.add('is-visible'));
+      return undefined;
+    }
+
     if (!('IntersectionObserver' in window)) {
       els.forEach((el) => el.classList.add('is-visible'));
       return undefined;

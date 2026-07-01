@@ -1,5 +1,6 @@
 import SectionTitle from '../components/SectionTitle.jsx';
 import InquiryForm from '../components/InquiryForm.jsx';
+import ExternalLink from '../components/ExternalLink.jsx';
 import { InstagramIcon, MailIcon, EtsyIcon } from '../components/icons.jsx';
 import {
   INSTAGRAM_URL,
@@ -32,9 +33,9 @@ export default function Contact() {
             <SectionTitle title={contact.form.title} align="left" />
             <p className="muted">
               {t('common.igPreferredNote')} {contact.form.etsyIntro}{' '}
-              <a href={ETSY_URL} target="_blank" rel="noreferrer">
+              <ExternalLink href={ETSY_URL}>
                 {t('common.etsyLink')}
-              </a>
+              </ExternalLink>
               .
             </p>
             <InquiryForm defaultSubject="" />
@@ -42,15 +43,15 @@ export default function Contact() {
 
           <aside className="contact__aside reveal">
             <h3 className="serif contact__aside-title">{contact.aside.title}</h3>
-            <a className="contact__link" href={INSTAGRAM_URL} target="_blank" rel="noreferrer">
+            <ExternalLink className="contact__link" href={INSTAGRAM_URL}>
               <InstagramIcon /> {t('contact.aside.instagram', { handle: INSTAGRAM_HANDLE })}
-            </a>
+            </ExternalLink>
             <a className="contact__link" href={`mailto:${CONTACT_EMAIL}`}>
               <MailIcon /> {CONTACT_EMAIL}
             </a>
-            <a className="contact__link" href={ETSY_URL} target="_blank" rel="noreferrer">
+            <ExternalLink className="contact__link" href={ETSY_URL}>
               <EtsyIcon /> {t('common.etsyOnEtsy', { etsyShop: ETSY_SHOP_NAME })}
-            </a>
+            </ExternalLink>
 
             <div className="contact__card">
               <h4 className="contact__card-title">{contact.cards.ordering.title}</h4>

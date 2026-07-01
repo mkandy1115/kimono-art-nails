@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import en from './en.js';
 import ja from './ja.js';
 import { CONTACT_EMAIL, ETSY_SHOP_NAME, ETSY_URL, INSTAGRAM_HANDLE } from '../lib/site.js';
@@ -29,6 +29,8 @@ export function LocaleProvider({ children }) {
       return 'en';
     }
   });
+  const [localeAnnouncement, setLocaleAnnouncement] = useState('');
+  const skipLocaleAnnouncement = useRef(true);
 
   const setLocale = useCallback((next) => {
     const value = next === 'ja' ? 'ja' : 'en';
@@ -52,6 +54,15 @@ export function LocaleProvider({ children }) {
     if (desc && meta?.description) desc.setAttribute('content', meta.description);
   }, [locale]);
 
+  useEffect(() => {
+    if (skipLocaleAnnouncement.current) {
+      skipLocaleAnnouncement.current = false;
+      return;
+    }
+    const message = MESSAGES[locale]?.a11y?.localeChanged;
+    if (message) setLocaleAnnouncement(message);
+  }, [locale]);
+
   const messages = MESSAGES[locale] ?? MESSAGES.en;
 
   const t = useCallback(
@@ -73,7 +84,14 @@ export function LocaleProvider({ children }) {
     [locale, setLocale, toggleLocale, t, faqAnswer, messages]
   );
 
-  return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
+  return (
+    <LocaleContext.Provider value={value}>
+      <div aria-live="polite" aria-atomic="true" className="visually-hidden">
+        {localeAnnouncement}
+      </div>
+      {children}
+    </LocaleContext.Provider>
+  );
 }
 
 export function useLocale() {

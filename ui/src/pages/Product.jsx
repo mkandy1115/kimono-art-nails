@@ -4,6 +4,7 @@ import ProductVisual from '../components/ProductVisual.jsx';
 import ProductCard from '../components/ProductCard.jsx';
 import InquiryForm from '../components/InquiryForm.jsx';
 import { ArrowIcon } from '../components/icons.jsx';
+import ExternalLink from '../components/ExternalLink.jsx';
 import { fetchProduct, fetchProducts } from '../api/client.js';
 import { INSTAGRAM_URL, ETSY_SHOP_NAME } from '../lib/site.js';
 import { formatPrice } from '../lib/format.js';
@@ -175,15 +176,13 @@ export default function Product() {
                   {product.status === 'coming_soon'
                     ? t('product.comingSoon')
                     : t('product.soldOut')}
-                  <a
+                  <ExternalLink
                     href={INSTAGRAM_URL}
-                    target="_blank"
-                    rel="noreferrer"
                     className="btn btn--ghost"
                     style={{ marginTop: '1rem' }}
                   >
                     {t('common.messageInstagram')}
-                  </a>
+                  </ExternalLink>
                 </div>
               )}
 

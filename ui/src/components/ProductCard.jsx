@@ -9,7 +9,7 @@ export default function ProductCard({ product }) {
   const statusLabel = messages.status[product.status] || product.status;
 
   return (
-    <Link to={`/shop/${product.slug}`} className="card" aria-label={product.name}>
+    <Link to={`/shop/${product.slug}`} className="card">
       <div className="card__media">
         <ProductVisual product={product} className="card__img" />
         <span className={`badge badge--${product.status} card__badge`}>

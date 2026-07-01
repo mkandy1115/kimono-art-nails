@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { InstagramIcon, MailIcon, EtsyIcon } from './icons.jsx';
+import ExternalLink from './ExternalLink.jsx';
 import {
   INSTAGRAM_URL,
   INSTAGRAM_HANDLE,
@@ -15,7 +16,7 @@ export default function Footer() {
   const links = messages.footer.links;
 
   return (
-    <footer className="footer">
+    <footer id="site-footer" className="footer">
       <div className="footer__top container">
         <div className="footer__brand">
           <img
@@ -29,7 +30,7 @@ export default function Footer() {
         </div>
 
         <nav className="footer__col" aria-label={t('footer.explore')}>
-          <h4 className="footer__heading">{t('footer.explore')}</h4>
+          <p className="footer__heading">{t('footer.explore')}</p>
           <Link to="/shop">{links.shop}</Link>
           <Link to="/gallery">{links.gallery}</Link>
           <Link to="/about">{links.about}</Link>
@@ -38,7 +39,7 @@ export default function Footer() {
         </nav>
 
         <nav className="footer__col" aria-label={t('footer.help')}>
-          <h4 className="footer__heading">{t('footer.help')}</h4>
+          <p className="footer__heading">{t('footer.help')}</p>
           <Link to="/faq#sizing">{links.sizing}</Link>
           <Link to="/faq#shipping">{links.shipping}</Link>
           <Link to="/faq#orders">{links.orders}</Link>
@@ -47,16 +48,16 @@ export default function Footer() {
         </nav>
 
         <div className="footer__col">
-          <h4 className="footer__heading">{t('footer.stayInTouch')}</h4>
-          <a className="footer__contact" href={INSTAGRAM_URL} target="_blank" rel="noreferrer">
+          <p className="footer__heading">{t('footer.stayInTouch')}</p>
+          <ExternalLink className="footer__contact" href={INSTAGRAM_URL}>
             <InstagramIcon /> {INSTAGRAM_HANDLE}
-          </a>
+          </ExternalLink>
           <a className="footer__contact" href={`mailto:${CONTACT_EMAIL}`}>
             <MailIcon /> {CONTACT_EMAIL}
           </a>
-          <a className="footer__contact" href={ETSY_URL} target="_blank" rel="noreferrer">
+          <ExternalLink className="footer__contact" href={ETSY_URL}>
             <EtsyIcon /> {ETSY_SHOP_NAME}
-          </a>
+          </ExternalLink>
           <p className="footer__note">{t('footer.note')}</p>
         </div>
       </div>

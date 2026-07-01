@@ -11,7 +11,7 @@ function seededRandom(seed) {
   };
 }
 
-export default function NailIllustration({ theme = {}, seed = 'kimono', className }) {
+export default function NailIllustration({ theme = {}, seed = 'kimono', className, ariaLabel }) {
   const from = theme.from || '#F7DDE6';
   const to = theme.to || '#E8A7B3';
   const accent = theme.accent || '#D8B57A';
@@ -39,7 +39,7 @@ export default function NailIllustration({ theme = {}, seed = 'kimono', classNam
       className={className}
       viewBox="0 0 330 330"
       role="img"
-      aria-label="Illustration of a nail chip set"
+      aria-label={ariaLabel || 'Illustration of a nail chip set'}
       preserveAspectRatio="xMidYMid slice"
     >
       <defs>

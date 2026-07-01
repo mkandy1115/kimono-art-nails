@@ -5,6 +5,7 @@ import { ArrowIcon } from '../components/icons.jsx';
 import { INSTAGRAM_URL } from '../lib/site.js';
 import useReveal from '../hooks/useReveal.js';
 import { useLocale } from '../i18n/LocaleContext.jsx';
+import ExternalLink from '../components/ExternalLink.jsx';
 
 function buildFaqItems(group, faq, faqAnswer) {
   return group.items.map((item, index) => {
@@ -43,12 +44,14 @@ function buildFaqItems(group, faq, faqAnswer) {
   });
 }
 
-function Accordion({ items }) {
+function Accordion({ items, sectionId }) {
   const [open, setOpen] = useState(0);
   return (
     <div className="accordion">
       {items.map((item, i) => {
         const isOpen = open === i;
+        const buttonId = `${sectionId}-button-${i}`;
+        const panelId = `${sectionId}-panel-${i}`;
         return (
           <div
             key={item.q}
@@ -56,8 +59,10 @@ function Accordion({ items }) {
           >
             <button
               type="button"
+              id={buttonId}
               className="accordion__head"
               aria-expanded={isOpen}
+              aria-controls={panelId}
               onClick={() => setOpen(isOpen ? -1 : i)}
             >
               <span>{item.q}</span>
@@ -65,7 +70,15 @@ function Accordion({ items }) {
                 {isOpen ? '–' : '+'}
               </span>
             </button>
-            <div className="accordion__panel">
+            <div
+              id={panelId}
+              className="accordion__panel"
+              role="region"
+              aria-labelledby={buttonId}
+              ref={(el) => {
+                if (el) el.inert = !isOpen;
+              }}
+            >
               {item.content ?? <p className="muted">{item.a}</p>}
             </div>
           </div>
@@ -113,7 +126,7 @@ export default function FAQ() {
           <div className="container container--narrow">
             <SectionTitle title={group.title} align="center" />
             <div className="reveal">
-              <Accordion items={group.items} />
+              <Accordion items={group.items} sectionId={group.id} />
             </div>
           </div>
         </section>
@@ -125,9 +138,9 @@ export default function FAQ() {
             <h2 className="cta-band__title">{faq.cta.title}</h2>
             <p className="cta-band__sub">{faq.cta.sub}</p>
             <div className="hero__cta center">
-              <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn btn--primary">
+              <ExternalLink href={INSTAGRAM_URL} className="btn btn--primary">
                 {faq.cta.instagram} <ArrowIcon className="btn__arrow" />
-              </a>
+              </ExternalLink>
               <Link to="/contact" className="btn btn--ghost">
                 {faq.cta.contact}
               </Link>

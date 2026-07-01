@@ -4,6 +4,7 @@ import SectionTitle from '../components/SectionTitle.jsx';
 import ProductCard from '../components/ProductCard.jsx';
 import ProductVisual from '../components/ProductVisual.jsx';
 import { ArrowIcon } from '../components/icons.jsx';
+import ExternalLink from '../components/ExternalLink.jsx';
 import { fetchProducts } from '../api/client.js';
 import { productByDisplayOrder } from '../lib/catalog.js';
 import { INSTAGRAM_URL } from '../lib/site.js';
@@ -188,9 +189,9 @@ export default function Home() {
               <Link to="/shop" className="btn btn--primary">
                 {home.cta.shop} <ArrowIcon className="btn__arrow" />
               </Link>
-              <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn btn--ghost">
+              <ExternalLink href={INSTAGRAM_URL} className="btn btn--ghost">
                 {home.cta.instagram}
-              </a>
+              </ExternalLink>
             </div>
           </div>
         </div>

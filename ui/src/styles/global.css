@@ -238,6 +238,34 @@ p {
   left: 0;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+a:focus-visible,
+button:focus-visible,
+.header__link:focus-visible,
+.header__icon:focus-visible,
+.header__burger:focus-visible,
+.header__lang:focus-visible,
+.accordion__head:focus-visible,
+.drawer__link:focus-visible,
+.drawer__social:focus-visible,
+.drawer__scrim:focus-visible,
+.card:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -247,13 +275,23 @@ p {
   }
 }
 
-/* Reveal-on-scroll */
+/* Reveal-on-scroll — visible by default; animated only when JS is available */
 .reveal {
+  opacity: 1;
+  transform: none;
+}
+html.js .reveal:not(.is-visible) {
   opacity: 0;
   transform: translateY(22px);
   transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
 }
-.reveal.is-visible {
+html.js .reveal.is-visible {
   opacity: 1;
   transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal:not(.is-visible) {
+    opacity: 1;
+    transform: none;
+  }
 }
