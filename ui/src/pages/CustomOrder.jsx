@@ -69,6 +69,17 @@ export default function CustomOrder() {
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. We will discuss your design
             and send purchase details before payment.
           </p>
+
+          <figure className="custom-order-sample reveal">
+            <img
+              src="/4July-custom.jpg"
+              alt="Sample custom press-on nail set"
+              width="448"
+              height="448"
+              loading="lazy"
+            />
+            <figcaption>Sample custom order — $78</figcaption>
+          </figure>
         </div>
       </section>
 

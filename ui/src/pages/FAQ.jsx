@@ -100,7 +100,24 @@ const GROUPS = [
     items: [
       {
         q: 'How do I apply press-on nails?',
-        a: 'Every set includes an application kit (prep pad, adhesive tabs, and glue) with simple instructions. Clean and buff your natural nails, choose the right size for each finger, then apply with tabs for a temporary hold or glue for a longer wear.',
+        panelTall: true,
+        content: (
+          <>
+            <p className="muted">
+              Every set includes an application kit (prep pad, adhesive tabs, and glue) with simple
+              instructions. Clean and buff your natural nails, choose the right size for each
+              finger, then apply with tabs for a temporary hold or glue for a longer wear.
+            </p>
+            <img
+              className="accordion__figure"
+              src="/supplies.jpg"
+              alt="Press-on nail application kit with prep pad, adhesive tabs, and glue"
+              width="640"
+              height="480"
+              loading="lazy"
+            />
+          </>
+        ),
       },
       {
         q: 'How long do they last?',
@@ -121,7 +138,7 @@ function Accordion({ items }) {
       {items.map((item, i) => {
         const isOpen = open === i;
         return (
-          <div key={item.q} className={`accordion__item${isOpen ? ' is-open' : ''}`}>
+          <div key={item.q} className={`accordion__item${isOpen ? ' is-open' : ''}${item.panelTall ? ' accordion__item--tall' : ''}`}>
             <button
               type="button"
               className="accordion__head"
