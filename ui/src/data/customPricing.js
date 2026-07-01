@@ -52,3 +52,15 @@ export const ADDON_SECTION = {
     { label: 'Small', price: '+$1' },
   ],
 };
+
+export const SAMPLE_ORDER = {
+  total: '$68',
+  lines: [
+    { label: 'Basic fee', price: '$10' },
+    { label: 'Full design order', price: '$40' },
+  ],
+  addons: [
+    { label: 'Magnet ($1 × 6 nails)', price: '$6' },
+    { label: 'Hand-painted design ($3 × 4 nails)', price: '$12' },
+  ],
+};

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowIcon } from '../components/icons.jsx';
 import { INSTAGRAM_URL, INSTAGRAM_HANDLE, CONTACT_EMAIL } from '../lib/site.js';
-import { PRICING_SECTIONS, ADDON_SECTION } from '../data/customPricing.js';
+import { PRICING_SECTIONS, ADDON_SECTION, SAMPLE_ORDER } from '../data/customPricing.js';
 import useReveal from '../hooks/useReveal.js';
 
 function PriceRow({ label, price, formula, note, perUnit }) {
@@ -78,7 +78,22 @@ export default function CustomOrder() {
               height="448"
               loading="lazy"
             />
-            <figcaption>Sample custom order — $78</figcaption>
+            <figcaption className="custom-order-sample__title">
+              Sample custom order — {SAMPLE_ORDER.total}
+            </figcaption>
+            <div className="custom-order-sample__breakdown">
+              {SAMPLE_ORDER.lines.map((line) => (
+                <PriceRow key={line.label} {...line} />
+              ))}
+              <p className="price-sheet__sublabel">Additional art fees</p>
+              {SAMPLE_ORDER.addons.map((line) => (
+                <PriceRow key={line.label} {...line} />
+              ))}
+              <div className="custom-order-sample__total">
+                <span>Total</span>
+                <span>{SAMPLE_ORDER.total}</span>
+              </div>
+            </div>
           </figure>
         </div>
       </section>

@@ -608,7 +608,6 @@
 .custom-order-sample {
   max-width: 28rem;
   margin: 1.5rem auto 0;
-  text-align: center;
 }
 .custom-order-sample img {
   display: block;
@@ -619,8 +618,33 @@
   border: 1px solid var(--line);
   box-shadow: var(--shadow-soft);
 }
-.custom-order-sample figcaption {
-  margin-top: 0.55rem;
-  font-size: 0.86rem;
-  color: var(--text-soft);
+.custom-order-sample__title {
+  margin: 0.65rem 0 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+}
+.custom-order-sample__breakdown {
+  padding: 1rem 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 0.92rem;
+  text-align: left;
+}
+.custom-order-sample__breakdown .price-sheet__sublabel {
+  margin-top: 0.65rem;
+}
+.custom-order-sample__total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--text);
 }
