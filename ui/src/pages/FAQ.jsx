@@ -68,33 +68,15 @@ const GROUPS = [
     items: [
       {
         q: 'How do I pay for custom press-on nails?',
-        a: 'The final price is determined after we discuss the design and any additional options. Once the total is confirmed, we will send payment details and payment is made through Venmo. Production begins after payment has been confirmed.',
-      },
-    ],
-  },
-  {
-    id: 'pricing',
-    title: 'Custom order pricing',
-    items: [
-      {
-        q: 'What is the basic custom order fee?',
-        a: 'Custom made-to-order creation fee: $10. This covers 10 nails made to fit your nail sizes.',
-      },
-      {
-        q: 'How much do existing design orders cost?',
-        a: 'Size customization for a design already in our collection: listed design price + $10 basic fee. Color change for an existing design: listed design price + $10 basic fee + $20.',
-      },
-      {
-        q: 'What about simple one-color designs?',
-        a: 'Simple design orders (standalone, not based on an existing catalog design): one color $10; magnet one-color $20.',
-      },
-      {
-        q: 'What is a full custom design order?',
-        a: 'Full custom design: $10 basic fee + $40.',
-      },
-      {
-        q: 'What additional art fees apply?',
-        a: 'These apply to full custom design orders only. Japanese pattern (wagara) art: +$4 per nail. Mirror art: +$3 per nail. Hand-painted detail: +$2 and up per nail. Magnet accent: +$1 per nail. Additional charms or parts: large +$2, medium +$1.50, small +$1.',
+        content: (
+          <p className="muted">
+            The final price is determined after we discuss the design and any additional options.
+            See our{' '}
+            <Link to="/custom-order">Custom Order</Link> page for the full price list. Once the
+            total is confirmed, we will send payment details and payment is made through Venmo.
+            Production begins after payment has been confirmed.
+          </p>
+        ),
       },
     ],
   },
@@ -152,7 +134,7 @@ function Accordion({ items }) {
               </span>
             </button>
             <div className="accordion__panel">
-              <p className="muted">{item.a}</p>
+              {item.content ?? <p className="muted">{item.a}</p>}
             </div>
           </div>
         );
@@ -170,8 +152,9 @@ export default function FAQ() {
           <span className="page-hero__eyebrow">FAQ</span>
           <h1 className="page-hero__title">Good to know</h1>
           <p className="page-hero__sub">
-            Answers about ordering, sizing, shipping, and custom pricing. For the fastest reply,
-            DM us on Instagram.
+            Answers about ordering, sizing, and shipping. For custom pricing, see our{' '}
+            <Link to="/custom-order">Custom Order</Link> page. For the fastest reply, DM us on
+            Instagram.
           </p>
         </div>
       </section>

@@ -33,6 +33,7 @@ export default function Footer() {
           <Link to="/gallery">Gallery</Link>
           <Link to="/about">About</Link>
           <Link to="/faq">FAQ</Link>
+          <Link to="/custom-order">Custom Order</Link>
         </nav>
 
         <nav className="footer__col" aria-label="Help">
@@ -40,6 +41,7 @@ export default function Footer() {
           <Link to="/faq#sizing">Sizing & fit</Link>
           <Link to="/faq#shipping">Shipping</Link>
           <Link to="/faq#orders">How to order</Link>
+          <Link to="/faq#care">Application & Care</Link>
           <Link to="/contact">Contact</Link>
         </nav>
 

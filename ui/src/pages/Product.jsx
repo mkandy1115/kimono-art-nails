@@ -21,11 +21,13 @@ export default function Product() {
   const [related, setRelated] = useState([]);
   const [status, setStatus] = useState('loading'); // loading | found | missing
   const [showForm, setShowForm] = useState(false);
+  const [activeImage, setActiveImage] = useState(null);
 
   useEffect(() => {
     let active = true;
     setStatus('loading');
     setShowForm(false);
+    setActiveImage(null);
     fetchProduct(slug).then(({ data }) => {
       if (!active) return;
       if (!data) {
@@ -85,6 +87,20 @@ export default function Product() {
   }
 
   const isOrderable = product.status === 'available' || product.status === 'made_to_order';
+  const mainImage = activeImage ?? product.image;
+  const gallery = product.gallery ?? [];
+  const thumbImages =
+    activeImage === null
+      ? gallery
+      : [product.image, ...gallery.filter((src) => src !== activeImage)].filter(Boolean);
+
+  const handleThumbClick = (src) => {
+    if (src === product.image) {
+      setActiveImage(null);
+    } else {
+      setActiveImage(src);
+    }
+  };
 
   const specs = [
     ['Shape', product.shape],
@@ -106,11 +122,29 @@ export default function Product() {
 
           <div className="product">
             <div className="product__media reveal">
-              <ProductVisual product={product} className="product__img" />
-              {product.gallery?.length > 0 && (
+              {mainImage ? (
+                <img
+                  className="product__img"
+                  src={mainImage}
+                  alt={product.name}
+                  width="330"
+                  height="330"
+                />
+              ) : (
+                <ProductVisual product={product} className="product__img" />
+              )}
+              {thumbImages.length > 0 && (
                 <div className="product__thumbs">
-                  {product.gallery.map((src, i) => (
-                    <img key={i} src={src} alt={`${product.name} detail ${i + 1}`} loading="lazy" />
+                  {thumbImages.map((src) => (
+                    <button
+                      key={src}
+                      type="button"
+                      className="product__thumb"
+                      aria-label={`View ${product.name} photo`}
+                      onClick={() => handleThumbClick(src)}
+                    >
+                      <img src={src} alt="" loading="lazy" />
+                    </button>
                   ))}
                 </div>
               )}
