@@ -60,7 +60,7 @@ export default function Header() {
         <div className="header__actions">
           <button
             type="button"
-            className="header__link"
+            className="header__link header__lang"
             onClick={toggleLocale}
             aria-label={t('lang.toggleLabel')}
           >

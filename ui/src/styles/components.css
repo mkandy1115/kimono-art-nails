@@ -67,6 +67,14 @@
 .header__link.is-active::after { transform: scaleX(1); }
 .header__link.is-active { color: var(--gold-deep); }
 
+.header__lang {
+  border: none;
+  background: transparent;
+}
+.header__lang::after {
+  display: none;
+}
+
 .header__actions {
   display: flex;
   align-items: center;

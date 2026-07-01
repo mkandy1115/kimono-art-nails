@@ -4,7 +4,7 @@ import SectionTitle from '../components/SectionTitle.jsx';
 import ProductCard from '../components/ProductCard.jsx';
 import ProductVisual from '../components/ProductVisual.jsx';
 import { ArrowIcon } from '../components/icons.jsx';
-import { fetchProducts, fetchCategories } from '../api/client.js';
+import { fetchProducts } from '../api/client.js';
 import { productByDisplayOrder } from '../lib/catalog.js';
 import { INSTAGRAM_URL } from '../lib/site.js';
 import useReveal from '../hooks/useReveal.js';
@@ -14,15 +14,13 @@ export default function Home() {
   const { t, messages } = useLocale();
   const home = messages.home;
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
-    Promise.all([fetchProducts(), fetchCategories()]).then(([prod, cats]) => {
+    fetchProducts().then(({ data }) => {
       if (!active) return;
-      setProducts(prod.data);
-      setCategories(cats.data.slice(0, 4));
+      setProducts(data);
       setLoading(false);
     });
     return () => {
@@ -34,7 +32,7 @@ export default function Home() {
   const showcaseSecondary = productByDisplayOrder(products, 4);
   const collectionPreview = products.slice(0, 4);
 
-  useReveal([loading, products.length, categories.length]);
+  useReveal([loading, products.length]);
 
   return (
     <>
@@ -140,6 +138,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Collections — hidden for now
       <section className="section">
         <div className="container">
           <SectionTitle eyebrow={home.collections.eyebrow} title={home.collections.title} />
@@ -159,6 +158,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      */}
 
       <section className="section section--pink">
         <div className="container">
