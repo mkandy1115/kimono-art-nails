@@ -5,28 +5,13 @@
 /* -------------------------------- Logo ----------------------------------- */
 .logo {
   display: inline-flex;
-  flex-direction: column;
-  line-height: 1;
-  letter-spacing: 0.16em;
+  line-height: 0;
 }
-.logo__main {
-  font-family: var(--font-display);
-  font-size: 1.6rem;
-  font-weight: 500;
-  letter-spacing: 0.22em;
-  color: var(--text);
+.logo__img {
+  height: 44px;
+  width: auto;
+  display: block;
 }
-.logo__sub {
-  font-family: var(--font-sans);
-  font-size: 0.6rem;
-  letter-spacing: 0.42em;
-  text-transform: uppercase;
-  color: var(--gold-deep);
-  margin-top: 0.35rem;
-  padding-left: 0.18em;
-}
-.logo--light .logo__main,
-.logo--light .logo__sub { color: #fff; }
 
 /* ------------------------------- Header ---------------------------------- */
 .header {
@@ -245,20 +230,10 @@
   gap: 2.5rem;
   padding-block: clamp(3rem, 6vw, 4.5rem);
 }
-.footer__logo {
-  font-family: var(--font-display);
-  font-size: 1.7rem;
-  letter-spacing: 0.22em;
-  color: #fff;
+.footer__logo-img {
+  height: 48px;
+  width: auto;
   display: block;
-}
-.footer__logo-sub {
-  font-size: 0.6rem;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  color: var(--gold);
-  display: block;
-  margin-top: 0.3rem;
 }
 .footer__tagline { margin-top: 1.1rem; color: #d8ccc6; max-width: 34ch; font-size: 0.92rem; }
 .footer__col { display: flex; flex-direction: column; gap: 0.6rem; }

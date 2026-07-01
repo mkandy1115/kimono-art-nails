@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import ProductVisual from '../components/ProductVisual.jsx';
 import { ArrowIcon } from '../components/icons.jsx';
 import { fetchProducts } from '../api/client.js';
+import { INSTAGRAM_URL } from '../lib/site.js';
 import useReveal from '../hooks/useReveal.js';
 
 export default function Gallery() {
@@ -72,15 +73,16 @@ export default function Gallery() {
             Like something you see?
           </h2>
           <p className="muted" style={{ maxWidth: '46ch', margin: '0.75rem auto 1.75rem' }}>
-            Browse availability in the shop, or ask us about a custom version.
+            Browse availability in the shop, or DM us on Instagram for the fastest reply about a
+            custom version.
           </p>
           <div className="hero__cta center">
             <Link to="/shop" className="btn btn--primary">
               Go to shop <ArrowIcon className="btn__arrow" />
             </Link>
-            <Link to="/contact" className="btn btn--ghost">
-              Contact us
-            </Link>
+            <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn btn--ghost">
+              Message on Instagram
+            </a>
           </div>
         </div>
       </section>

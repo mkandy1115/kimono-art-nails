@@ -6,6 +6,7 @@ import ProductVisual from '../components/ProductVisual.jsx';
 import { ArrowIcon } from '../components/icons.jsx';
 import { fetchProducts, fetchCategories } from '../api/client.js';
 import { productByDisplayOrder } from '../lib/catalog.js';
+import { INSTAGRAM_URL } from '../lib/site.js';
 import useReveal from '../hooks/useReveal.js';
 
 const STEPS = [
@@ -215,15 +216,16 @@ export default function Home() {
           <div className="cta-band reveal">
             <h2 className="cta-band__title">Ready to find your set?</h2>
             <p className="cta-band__sub">
-              New collections are limited and made in small batches. Browse what's available now.
+              Browse the shop or Etsy for ready-to-ship sets. For custom orders, DM us on
+              Instagram for the fastest reply.
             </p>
             <div className="hero__cta center">
               <Link to="/shop" className="btn btn--primary">
                 Shop the collection <ArrowIcon className="btn__arrow" />
               </Link>
-              <Link to="/contact" className="btn btn--ghost">
-                Request a custom set
-              </Link>
+              <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn btn--ghost">
+                Message on Instagram
+              </a>
             </div>
           </div>
         </div>

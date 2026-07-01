@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import Logo from './Logo.jsx';
-import { InstagramIcon, BagIcon, MenuIcon, CloseIcon } from './icons.jsx';
+import { InstagramIcon, EtsyIcon, MenuIcon, CloseIcon } from './icons.jsx';
+import { INSTAGRAM_URL, ETSY_URL } from '../lib/site.js';
 
 const NAV = [
   { to: '/', label: 'Home', end: true },
@@ -11,8 +12,6 @@ const NAV = [
   { to: '/faq', label: 'FAQ' },
   { to: '/contact', label: 'Contact' },
 ];
-
-const INSTAGRAM_URL = 'https://instagram.com';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -26,12 +25,10 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close the mobile menu on route change.
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
 
-  // Prevent body scroll while the mobile menu is open.
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
     return () => {
@@ -67,9 +64,15 @@ export default function Header() {
           >
             <InstagramIcon />
           </a>
-          <NavLink to="/contact" className="header__icon" aria-label="Inquire / order">
-            <BagIcon />
-          </NavLink>
+          <a
+            href={ETSY_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="header__icon"
+            aria-label="Etsy shop"
+          >
+            <EtsyIcon />
+          </a>
           <button
             type="button"
             className="header__burger"
@@ -82,7 +85,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile drawer */}
       <div className={`drawer${open ? ' drawer--open' : ''}`} aria-hidden={!open}>
         <nav className="drawer__nav" aria-label="Mobile">
           {NAV.map((item) => (
@@ -99,6 +101,9 @@ export default function Header() {
         <div className="drawer__foot">
           <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="drawer__social">
             <InstagramIcon /> Instagram
+          </a>
+          <a href={ETSY_URL} target="_blank" rel="noreferrer" className="drawer__social">
+            <EtsyIcon /> Etsy
           </a>
         </div>
       </div>

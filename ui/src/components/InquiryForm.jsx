@@ -34,7 +34,8 @@ export default function InquiryForm({ productSlug = null, defaultSubject = '' })
         <span className="form-success__mark" aria-hidden="true">✦</span>
         <h3 className="serif">Thank you!</h3>
         <p className="muted">
-          Your inquiry has been received. We'll reply by email soon — usually within a day or two.
+          Your inquiry has been received. For the fastest reply, DM us on Instagram — we usually
+          respond quicker there than by email.
         </p>
         <button type="button" className="btn btn--ghost" onClick={() => setState('idle')}>
           Send another

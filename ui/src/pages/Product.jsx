@@ -5,6 +5,13 @@ import ProductCard from '../components/ProductCard.jsx';
 import InquiryForm from '../components/InquiryForm.jsx';
 import { ArrowIcon } from '../components/icons.jsx';
 import { fetchProduct, fetchProducts } from '../api/client.js';
+import {
+  INSTAGRAM_URL,
+  INSTAGRAM_HANDLE,
+  ETSY_URL,
+  ETSY_SHOP_NAME,
+  IG_PREFERRED_NOTE,
+} from '../lib/site.js';
 import { formatPrice, STATUS_LABEL } from '../lib/format.js';
 import useReveal from '../hooks/useReveal.js';
 
@@ -121,14 +128,14 @@ export default function Product() {
               <p className="product__price">{formatPrice(product.price, product.currency)}</p>
               <p className="product__desc">{product.description}</p>
 
-              <dl className="specs">
+              {/* <dl className="specs">
                 {specs.map(([k, v]) => (
                   <div key={k} className="specs__row">
                     <dt>{k}</dt>
                     <dd>{v}</dd>
                   </div>
                 ))}
-              </dl>
+              </dl> */}
 
               {isOrderable ? (
                 <>
@@ -141,18 +148,30 @@ export default function Product() {
                     <ArrowIcon className="btn__arrow" />
                   </button>
                   <p className="product__hint muted">
-                    We're a tiny studio and take orders by inquiry. Send a note and we'll reply by
-                    email with availability and payment details — usually within a day or two.
+                    To order this set, DM us on Instagram ({INSTAGRAM_HANDLE}) — that is our
+                    preferred channel and the fastest way to get a reply. {IG_PREFERRED_NOTE} You
+                    can also use the inquiry form below, or browse ready-to-ship sets on{' '}
+                    <a href={ETSY_URL} target="_blank" rel="noreferrer">
+                      {ETSY_SHOP_NAME} on Etsy
+                    </a>
+                    . We will discuss design details, pricing, and payment (Venmo) before
+                    production begins.
                   </p>
                 </>
               ) : (
                 <div className="product__soldout">
                   {product.status === 'coming_soon'
-                    ? 'This design is coming soon. Contact us to be notified when it launches.'
-                    : 'This design is currently sold out. Contact us about a restock or custom set.'}
-                  <Link to="/contact" className="btn btn--ghost" style={{ marginTop: '1rem' }}>
-                    Contact us
-                  </Link>
+                    ? `This design is coming soon. DM us on Instagram (${INSTAGRAM_HANDLE}) to be notified when it launches.`
+                    : `This design is currently sold out. DM us on Instagram (${INSTAGRAM_HANDLE}) about a restock or custom set.`}
+                  <a
+                    href={INSTAGRAM_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn--ghost"
+                    style={{ marginTop: '1rem' }}
+                  >
+                    Message on Instagram
+                  </a>
                 </div>
               )}
 

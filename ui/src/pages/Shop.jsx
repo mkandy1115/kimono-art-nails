@@ -58,7 +58,7 @@ export default function Shop() {
       <section className="section section--tight">
         <div className="container">
           {/* Filters */}
-          <div className="filters" role="tablist" aria-label="Filter by collection">
+          {/* <div className="filters" role="tablist" aria-label="Filter by collection">
             <button
               type="button"
               role="tab"
@@ -80,7 +80,7 @@ export default function Shop() {
                 {c.name}
               </button>
             ))}
-          </div>
+          </div> */}
 
           {loading ? (
             <div className="grid grid--cards">
