@@ -13,7 +13,7 @@
     "ALLOWED_ORIGINS": "https://kimono-art-nails.pages.dev",
     "API_PUBLIC_URL": "https://kimono-art-nails.kyo-andrus.workers.dev",
     "CONTACT_FROM": "hello@kimonoartnails.com",
-    "CONTACT_INBOX": "your-designated-email@gmail.com"
+    "CONTACT_INBOX": "kimono.art.nails@gmail.com"
   },
 
   // Cloudflare R2 bucket for product photos.
@@ -30,7 +30,7 @@
   "send_email": [
     {
       "name": "EMAIL",
-      "destination_address": "your-designated-email@gmail.com"
+      "destination_address": "kimono.art.nails@gmail.com"
     }
   ]
 
