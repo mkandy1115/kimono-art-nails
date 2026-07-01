@@ -11,6 +11,7 @@ import {
   createInquiry,
 } from './repository.js';
 import images from './routes/images.js';
+import { sendInquiryEmail } from './lib/inquiryEmail.js';
 
 // ----------------------------------------------------------------------------
 // KIMONO Art Nails API — Hono app for Cloudflare Workers.
@@ -64,6 +65,7 @@ app.get('/api/health', (c) =>
     service: 'kimono-art-nails-api',
     mode: c.get('db') ? 'postgres' : 'in-memory',
     images: Boolean(c.env.PRODUCT_IMAGE),
+    email: Boolean(c.env.EMAIL),
     time: new Date().toISOString(),
   })
 );
@@ -107,25 +109,53 @@ app.post('/api/inquiries', async (c) => {
 
   const { name, email, productSlug, subject, message } = body ?? {};
 
+  const trimmedName = name ? String(name).trim() : '';
+  const trimmedEmail = email ? String(email).trim() : '';
+  const trimmedMessage = message ? String(message).trim() : '';
+  const trimmedSubject = subject ? String(subject).trim() : null;
+  const trimmedSlug = productSlug ? String(productSlug).trim() : null;
+
   const errors = [];
-  if (!name || String(name).trim().length < 2) errors.push('A name is required.');
-  if (!email || !isEmail(String(email))) errors.push('A valid email is required.');
-  if (!message || String(message).trim().length < 5) errors.push('A message is required.');
+  if (!trimmedName || trimmedName.length < 2) errors.push('A name is required.');
+  if (trimmedName.length > 100) errors.push('Name is too long.');
+  if (!trimmedEmail || !isEmail(trimmedEmail)) errors.push('A valid email is required.');
+  if (!trimmedMessage || trimmedMessage.length < 5) errors.push('A message is required.');
+  if (trimmedMessage.length > 5000) errors.push('The message is too long.');
   if (errors.length) {
     return c.json({ error: 'Validation failed', details: errors }, 400);
   }
 
   const inquiry = await createInquiry(c.get('db'), {
-    name: String(name).trim(),
-    email: String(email).trim(),
-    productSlug: productSlug ? String(productSlug).trim() : null,
-    subject: subject ? String(subject).trim() : null,
-    message: String(message).trim(),
+    name: trimmedName,
+    email: trimmedEmail,
+    productSlug: trimmedSlug,
+    subject: trimmedSubject,
+    message: trimmedMessage,
   });
+
+  try {
+    const mail = await sendInquiryEmail(c.env, {
+      name: trimmedName,
+      email: trimmedEmail,
+      productSlug: trimmedSlug,
+      subject: trimmedSubject,
+      message: trimmedMessage,
+    });
+    if (c.env.EMAIL && !mail.sent) {
+      console.warn('[inquiry] EMAIL binding present but CONTACT_INBOX is not set — skipped send.');
+    }
+  } catch (err) {
+    console.error('[inquiry email]', err);
+    return c.json({ error: 'Your message could not be sent.' }, 500);
+  }
 
   return c.json(
     {
-      data: { id: inquiry.id ?? null, persisted: inquiry.persisted !== false },
+      data: {
+        id: inquiry.id ?? null,
+        persisted: inquiry.persisted !== false,
+        emailed: Boolean(c.env.EMAIL && c.env.CONTACT_INBOX?.trim()),
+      },
       message: 'Thank you — your inquiry has been received. We will reply by email soon.',
     },
     201

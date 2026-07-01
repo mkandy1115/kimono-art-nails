@@ -15,3 +15,10 @@ ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 # `gallery` values that are R2 keys (e.g. sakura-haze/main.jpg) are expanded
 # to full URLs like http://localhost:8787/images/sakura-haze/main.jpg
 API_PUBLIC_URL=http://localhost:8787
+
+# Authenticated sender (must match a domain onboarded in Email Sending).
+CONTACT_FROM=hello@kimonoartnails.com
+
+# Inbox that receives inquiry emails — must match send_email.destination_address
+# in wrangler.jsonc and be verified under Email Routing → Destination Addresses.
+CONTACT_INBOX=your-designated-email@gmail.com

@@ -11,23 +11,29 @@
   },
   "vars": {
     "ALLOWED_ORIGINS": "https://kimono-art-nails.pages.dev",
-    "API_PUBLIC_URL": "https://kimono-art-nails.kyo-andrus.workers.dev"
+    "API_PUBLIC_URL": "https://kimono-art-nails.kyo-andrus.workers.dev",
+    "CONTACT_FROM": "hello@kimonoartnails.com",
+    "CONTACT_INBOX": "your-designated-email@gmail.com"
   },
 
-  // Cloudflare R2 bucket for product photos. Create the bucket in the dashboard
-  // (R2 → Create bucket) with the same name, then attach this binding to the
-  // Worker under Settings → Bindings if deploying via the dashboard.
+  // Cloudflare R2 bucket for product photos.
   "r2_buckets": [
     {
       "binding": "PRODUCT_IMAGE",
       "bucket_name": "product-image"
     }
+  ],
+
+  // Inquiry emails → CONTACT_INBOX. destination_address must match CONTACT_INBOX.
+  // Verify the inbox under Email Routing → Destination Addresses, and onboard
+  // CONTACT_FROM's domain under Email Sending → Onboard Domain.
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "destination_address": "your-designated-email@gmail.com"
+    }
   ]
 
-  // Secrets (DATABASE_URL) and vars (ALLOWED_ORIGINS, API_PUBLIC_URL) are NOT
-  // stored here.
-  // - Local dev:   put them in api/.dev.vars (git-ignored).
-  // - Production:  add them in the Cloudflare dashboard
-  //                (Workers > your worker > Settings > Variables),
-  //                or via `npx wrangler secret put DATABASE_URL`.
+  // Secrets (DATABASE_URL) are NOT stored here — use api/.dev.vars locally or
+  // Workers → Settings → Variables (Encrypt) in production.
 }
