@@ -477,7 +477,7 @@ export default {
         { label: 'Japanese pattern art', price: '+$4' },
         { label: 'Mirror art', price: '+$3' },
         { label: 'Hand-painted design', price: '+$2〜' },
-        { label: 'Magnet', price: '+$1' },
+        { label: 'Magnet', price: '+$2' },
       ],
       parts: [
         { label: 'Large', price: '+$2' },
@@ -486,13 +486,13 @@ export default {
       ],
     },
     sampleOrder: {
-      total: '$68',
+      total: '$74',
       lines: [
         { label: 'Basic fee', price: '$10' },
         { label: 'Full design order', price: '$40' },
       ],
       addons: [
-        { label: 'Magnet ($1 × 6 nails)', price: '$6' },
+        { label: 'Magnet ($2 × 6 nails)', price: '$12' },
         { label: 'Hand-painted design ($3 × 4 nails)', price: '$12' },
       ],
     },

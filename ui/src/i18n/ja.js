@@ -477,7 +477,7 @@ export default {
         { label: '和柄アート', price: '+$4' },
         { label: 'ミラーアート', price: '+$3' },
         { label: '手描きデザイン', price: '+$2〜' },
-        { label: 'マグネット', price: '+$1' },
+        { label: 'マグネット', price: '+$2' },
       ],
       parts: [
         { label: '大', price: '+$2' },
@@ -486,13 +486,13 @@ export default {
       ],
     },
     sampleOrder: {
-      total: '$68',
+      total: '$74',
       lines: [
         { label: '基本料金', price: '$10' },
         { label: 'フルデザイン', price: '$40' },
       ],
       addons: [
-        { label: 'マグネット（$1 × 6本）', price: '$6' },
+        { label: 'マグネット（$2 × 6本）', price: '$12' },
         { label: '手描きデザイン（$3 × 4本）', price: '$12' },
       ],
     },
@@ -507,7 +507,7 @@ export default {
   notFound: {
     eyebrow: '404',
     title: 'このページは見つかりません',
-    sub: '散りゆく桜の花びらのように、お探しのページはここにはありません。ホームへお戻りください。',
+    sub: 'お探しのページはここにはありません。ホームへお戻りください。',
     button: 'ホームに戻る',
   },
 };
