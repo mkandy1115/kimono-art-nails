@@ -394,7 +394,7 @@ export default {
           },
           {
             q: 'How long do they last?',
-            a: 'With adhesive tabs, expect a few days of wear — ideal for events. With nail glue, a week or more is common. Wear time varies with your activity and natural nails.',
+            a: 'With adhesive tabs, expect a day of wear — ideal for events. With nail glue, a week or more is common. Wear time varies with your activity and natural nails.',
           },
           {
             q: 'Can I reuse my set?',
